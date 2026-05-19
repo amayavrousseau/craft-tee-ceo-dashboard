@@ -975,6 +975,296 @@
     flex-shrink: 0;
   }
 
+  /* PIPELINE / KANBAN */
+  .view-toggle {
+    display: inline-flex;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .view-toggle-btn {
+    background: none;
+    border: none;
+    padding: 6px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .view-toggle-btn:hover { color: var(--ink); }
+
+  .view-toggle-btn.active {
+    background: var(--white);
+    color: var(--ink);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+
+  .view-toggle-btn svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Pipeline board */
+  .pipeline-wrap {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+  }
+
+  .pipeline-board {
+    display: flex;
+    gap: 12px;
+    min-width: min-content;
+  }
+
+  .pipeline-col {
+    flex: 0 0 240px;
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    max-height: 600px;
+  }
+
+  .pipeline-col-head {
+    padding: 0.85rem 1rem;
+    border-bottom: 0.5px solid var(--border);
+    background: var(--paper, #faf8f4);
+    border-radius: 10px 10px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  .pipeline-col-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .pipeline-col-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+
+  .pipeline-col-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent-deep);
+    background: var(--accent-light);
+    padding: 2px 7px;
+    border-radius: 4px;
+    min-width: 22px;
+    text-align: center;
+  }
+
+  .pipeline-col-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .pipeline-col-body {
+    padding: 0.6rem;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pipeline-col-empty {
+    color: var(--muted-light, #8a857f);
+    font-size: 11px;
+    text-align: center;
+    padding: 1.2rem 0;
+    font-style: italic;
+  }
+
+  /* Pipeline cards */
+  .pipe-card {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 0.7rem 0.8rem;
+    cursor: pointer;
+    transition: all 0.12s;
+    position: relative;
+  }
+
+  .pipe-card:hover {
+    border-color: var(--accent-mid);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+
+  .pipe-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .pipe-card-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .pipe-card-urgency {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .pipe-card-urgency.green { background: var(--green); }
+  .pipe-card-urgency.amber { background: var(--amber); }
+  .pipe-card-urgency.red { background: var(--red, #b03a3a); }
+
+  .pipe-card-client {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.25;
+    margin-bottom: 3px;
+    letter-spacing: -0.005em;
+  }
+
+  .pipe-card-service {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .pipe-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 6px;
+    border-top: 0.5px solid var(--border-light);
+  }
+
+  .pipe-card-due {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  .pipe-card-due.green { color: var(--green); }
+  .pipe-card-due.amber { color: var(--amber); }
+  .pipe-card-due.red { color: var(--red, #b03a3a); }
+
+  .pipe-card-owner {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .pipe-card-aging {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--muted-light, #8a857f);
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .pipe-card-aging.warn { color: var(--amber); }
+
+  /* Pipeline insight banner */
+  .pipe-insight {
+    background: linear-gradient(to right, var(--amber-light) 0%, var(--white) 70%);
+    border: 0.5px solid var(--amber);
+    border-left: 3px solid var(--amber);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pipe-insight-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--amber);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Fraunces', serif;
+    flex-shrink: 0;
+  }
+
+  .pipe-insight-text {
+    font-size: 12.5px;
+    color: var(--ink);
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .pipe-insight-text strong { color: var(--amber); }
+
+  /* Pipeline filters */
+  .pipe-filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .pipe-filter-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 5px 11px;
+    border: 0.5px solid var(--border);
+    border-radius: 20px;
+    cursor: pointer;
+    color: var(--muted);
+    background: var(--white);
+    transition: all 0.12s;
+    letter-spacing: 0.02em;
+  }
+
+  .pipe-filter-chip:hover {
+    border-color: var(--accent-mid);
+    color: var(--accent-deep);
+  }
+
+  .pipe-filter-chip.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
   /* KPI PANEL STYLES */
   .kpi-section {
     margin-bottom: 2rem;
@@ -1331,6 +1621,23 @@
     .kpi-card-value { font-size: 22px; }
     .emp-name { min-width: 70px; font-size: 12px; }
 
+    /* Pipeline columns shrink and become snap-scrollable */
+    .pipeline-wrap {
+      padding: 0.6rem;
+      scroll-snap-type: x mandatory;
+    }
+    .pipeline-col {
+      flex: 0 0 85%;
+      max-width: 280px;
+      scroll-snap-align: start;
+      max-height: none;
+    }
+    .pipe-insight {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
     /* Review cards */
     .review-card { padding: 0.9rem; }
     .review-text { font-size: 13px; }
@@ -1648,25 +1955,346 @@
         <div class="stat-card"><div class="stat-label">Ready to Ship</div><div class="stat-value">2</div></div>
         <div class="stat-card"><div class="stat-label">Completed MTD</div><div class="stat-value">24</div></div>
       </div>
+
       <div class="section-header">
-        <div class="section-title">All active jobs</div>
-        <div class="section-tag">May 2025</div>
+        <div class="section-title">Production pipeline</div>
+        <div class="view-toggle">
+          <button class="view-toggle-btn active" onclick="setOrdersView('pipeline', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="6" height="18"/><rect x="11" y="3" width="6" height="12"/><rect x="19" y="3" width="2" height="8"/></svg>
+            Pipeline
+          </button>
+          <button class="view-toggle-btn" onclick="setOrdersView('table', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            Table
+          </button>
+        </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Job</th><th>Client</th><th>Service</th><th>Qty</th><th>Due</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td data-label="Job">CT-0218</td><td data-label="Client">USF Football</td><td data-label="Service">Screen print</td><td data-label="Qty">60</td><td data-label="Due">May 20</td><td data-label="Status"><span class="pill pill-amber">In production</span></td></tr>
-            <tr><td data-label="Job">CT-0217</td><td data-label="Client">Champs Elysium</td><td data-label="Service">Screen print</td><td data-label="Qty">120</td><td data-label="Due">May 21</td><td data-label="Status"><span class="pill pill-amber">In production</span></td></tr>
-            <tr><td data-label="Job">CT-0216</td><td data-label="Client">Kobie Marketing</td><td data-label="Service">Embroidery</td><td data-label="Qty">48</td><td data-label="Due">May 23</td><td data-label="Status"><span class="pill pill-green">Ready to ship</span></td></tr>
-            <tr><td data-label="Job">CT-0215</td><td data-label="Client">Tampa FC Youth</td><td data-label="Service">Screen print</td><td data-label="Qty">180</td><td data-label="Due">May 26</td><td data-label="Status"><span class="pill pill-blue">Art approval</span></td></tr>
-            <tr><td data-label="Job">CT-0214</td><td data-label="Client">Riviera Bay Realty</td><td data-label="Service">Embroidery</td><td data-label="Qty">48</td><td data-label="Due">May 28</td><td data-label="Status"><span class="pill pill-gray">Queued</span></td></tr>
-            <tr><td data-label="Job">CT-0213</td><td data-label="Client">St. Pete FC</td><td data-label="Service">Screen print</td><td data-label="Qty">200</td><td data-label="Due">May 30</td><td data-label="Status"><span class="pill pill-gray">Queued</span></td></tr>
-            <tr><td data-label="Job">CT-0212</td><td data-label="Client">Bay Area HVAC</td><td data-label="Service">Screen print</td><td data-label="Qty">36</td><td data-label="Due">Jun 2</td><td data-label="Status"><span class="pill pill-gray">Queued</span></td></tr>
-            <tr><td data-label="Job">CT-0211</td><td data-label="Client">Pinellas Schools</td><td data-label="Service">Screen print</td><td data-label="Qty">300</td><td data-label="Due">Jun 5</td><td data-label="Status"><span class="pill pill-gray">Queued</span></td></tr>
-          </tbody>
-        </table>
+
+      <!-- PIPELINE VIEW -->
+      <div id="orders-pipeline">
+
+        <div class="pipe-insight">
+          <div class="pipe-insight-icon">!</div>
+          <div class="pipe-insight-text">
+            <strong>2 jobs stuck more than 2 days</strong> in their current stage: CT-0215 in Art Approval (3d), CT-0211 awaiting blanks (4d). Worth a check-in.
+          </div>
+        </div>
+
+        <div class="pipe-filters">
+          <span class="pipe-filter-chip active" onclick="setOrdersFilter('all', this)">All open</span>
+          <span class="pipe-filter-chip" onclick="setOrdersFilter('week', this)">Due this week</span>
+          <span class="pipe-filter-chip" onclick="setOrdersFilter('overdue', this)">Overdue</span>
+          <span class="pipe-filter-chip" onclick="setOrdersFilter('rush', this)">Rush jobs</span>
+        </div>
+
+        <div class="pipeline-wrap">
+          <div class="pipeline-board">
+
+            <!-- QUOTE -->
+            <div class="pipeline-col">
+              <div class="pipeline-col-head">
+                <div class="pipeline-col-title-row">
+                  <span class="pipeline-col-title">Quote</span>
+                  <span class="pipeline-col-count">2</span>
+                </div>
+                <div class="pipeline-col-meta">350 pcs · est $5.3K</div>
+              </div>
+              <div class="pipeline-col-body">
+                <div class="pipe-card">
+                  <div class="pipe-card-head">
+                    <span class="pipe-card-id">CT-0220</span>
+                    <span class="pipe-card-urgency green"></span>
+                  </div>
+                  <div class="pipe-card-client">St. Pete Running Club</div>
+                  <div class="pipe-card-service">Screen print · 200 pcs</div>
+                  <div class="pipe-card-foot">
+                    <span class="pipe-card-due green">Due Jun 8</span>
+                    <span class="pipe-card-owner">Cody</span>
+                  </div>
+                  <div class="pipe-card-aging">1 day in stage</div>
+                </div>
+                <div class="pipe-card">
+                  <div class="pipe-card-head">
+                    <span class="pipe-card-id">CT-0221</span>
+                    <span class="pipe-card-urgency green"></span>
+                  </div>
+                  <div class="pipe-card-client">Ybor City Brewing</div>
+                  <div class="pipe-card-service">Screen print · 150 pcs</div>
+                  <div class="pipe-card-foot">
+                    <span class="pipe-card-due green">Due Jun 12</span>
+                    <span class="pipe-card-owner">Cody</span>
+                  </div>
+                  <div class="pipe-card-aging">2 days in stage</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ART APPROVAL -->
+            <div class="pipeline-col">
+              <div class="pipeline-col-head">
+                <div class="pipeline-col-title-row">
+                  <span class="pipeline-col-title">Art Approval</span>
+                  <span class="pipeline-col-count">2</span>
+                </div>
+                <div class="pipeline-col-meta">228 pcs</div>
+              </div>
+              <div class="pipeline-col-body">
+                <div class="pipe-card">
+                  <div class="pipe-card-head">
+                    <span class="pipe-card-id">CT-0215</span>
+                    <span class="pipe-card-urgency amber"></span>
+                  </div>
+                  <div class="pipe-card-client">Tampa FC Youth</div>
+                  <div class="pipe-card-service">Screen print · 180 pcs</div>
+                  <div class="pipe-card-foot">
+                    <span class="pipe-card-due amber">Due May 26</span>
+                    <span class="pipe-card-owner">Cody</span>
+                  </div>
+                  <div class="pipe-card-aging warn">3 days in stage · stuck</div>
+                </div>
+                <div class="pipe-card">
+                  <div class="pipe-card-head">
+                    <span class="pipe-card-id">CT-0212</span>
+                    <span class="pipe-card-urgency green"></span>
+                  </div>
+                  <div class="pipe-card-client">Bay Area HVAC</div>
+                  <div class="pipe-card-service">Screen print · 36 pcs</div>
+                  <div class="pipe-card-foot">
+                    <span class="pipe-card-due green">Due Jun 2</span>
+                    <span class="pipe-card-owner">Cody</span>
+                  </div>
+                  <div class="pipe-card-aging">1 day in stage</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BLANKS ORDERED -->
+            <div class="pipeline-col">
+              <div class="pipeline-col-head">
+                <div class="pipeline-col-title-row">
+                  <span class="pipeline-col-title">Blanks Ordered</span>
+                  <span class="pipeline-col-count">2</span>
+                </div>
+                <div class="pipeline-col-meta">348 pcs</div>
+              </div>
+              <div class="pipeline-col-body">
+                <div class="pipe-card">
+                  <div class="pipe-card-head">
+                    <span class="pipe-card-id">CT-0214</span>
+                    <span class="pipe-card-urgency green"></span>
+                  </div>
+                  <div class="pipe-card-client">Riviera Bay Realty</div>
+                  <div class="pipe-card-service">Embroidery · 48 pcs</div>
+                  <div class="pipe-card-foot">
+                    <span class="pipe-card-due green">Due May 28</span>
+                    <span class="pipe-card-owner">Tati</span>
+                  </div>
+                  <div class="pipe-card-aging">1 day in stage</div>
+                </div>
+                <div class="pipe-card">
+                  <div class="pipe-card-head">
+                    <span class="pipe-card-id">CT-0211</span>
+                    <span class="pipe-card-urgency amber"></span>
+                  </div>
+                  <div class="pipe-card-client">Pinellas Schools</div>
+                  <div class="pipe-card-service">Screen print · 300 pcs</div>
+                  <div class="pipe-card-foot">
+                    <span class="pipe-card-due amber">Due Jun 5</span>
+                    <span class="pipe-card-owner">Tati</span>
+                  </div>
+                  <div class="pipe-card-aging warn">4 days in stage · stuck</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- IN PRODUCTION -->
+            <div class="pipeline-col">
+              <div class="pipeline-col-head">
+                <div class="pipeline-col-title-row">
+                  <span class="pipeline-col-title">In Production</span>
+                  <span class="pipeline-col-count">3</span>
+                </div>
+                <div class="pipeline-col-meta">380 pcs</div>
+              </div>
+              <div class="pipeline-col-body">
+                <div class="pipe-card">
+                  <div class="pipe-card-head">
+                    <span class="pipe-card-id">CT-0218</span>
+                    <span class="pipe-card-urgency red"></span>
+                  </div>
+                  <div class="pipe-card-client">USF Football</div>
+                  <div class="pipe-card-service">Screen print · 60 pcs</div>
+                  <div class="pipe-card-foot">
+                    <span class="pipe-card-due red">Due Tue May 20</span>
+                    <span class="pipe-card-owner">Nick</span>
+                  </div>
+                  <div class="pipe-card-aging">2 days in stage</div>
+                </div>
+                <div class="pipe-card">
+                  <div class="pipe-card-head">
+                    <span class="pipe-card-id">CT-0217</span>
+                    <span class="pipe-card-urgency amber"></span>
+                  </div>
+                  <div class="pipe-card-client">Champs Elysium</div>
+                  <div class="pipe-card-service">Screen print · 120 pcs</div>
+                  <div class="pipe-card-foot">
+                    <span class="pipe-card-due amber">Due Wed May 21</span>
+                    <span class="pipe-card-owner">Nick</span>
+                  </div>
+                  <div class="pipe-card-aging">1 day in stage</div>
+                </div>
+                <div class="pipe-card">
+                  <div class="pipe-card-head">
+                    <span class="pipe-card-id">CT-0213</span>
+                    <span class="pipe-card-urgency green"></span>
+                  </div>
+                  <div class="pipe-card-client">St. Pete FC</div>
+                  <div class="pipe-card-service">Screen print · 200 pcs</div>
+                  <div class="pipe-card-foot">
+                    <span class="pipe-card-due green">Due May 30</span>
+                    <span class="pipe-card-owner">Nick</span>
+                  </div>
+                  <div class="pipe-card-aging">2 days in stage</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- QC + PACK -->
+            <div class="pipeline-col">
+              <div class="pipeline-col-head">
+                <div class="pipeline-col-title-row">
+                  <span class="pipeline-col-title">QC + Pack</span>
+                  <span class="pipeline-col-count">1</span>
+                </div>
+                <div class="pipeline-col-meta">48 pcs</div>
+              </div>
+              <div class="pipeline-col-body">
+                <div class="pipe-card">
+                  <div class="pipe-card-head">
+                    <span class="pipe-card-id">CT-0216</span>
+                    <span class="pipe-card-urgency green"></span>
+                  </div>
+                  <div class="pipe-card-client">Kobie Marketing</div>
+                  <div class="pipe-card-service">Embroidery · 48 pcs</div>
+                  <div class="pipe-card-foot">
+                    <span class="pipe-card-due green">Due May 23</span>
+                    <span class="pipe-card-owner">Nick E</span>
+                  </div>
+                  <div class="pipe-card-aging">1 day in stage</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- READY TO SHIP -->
+            <div class="pipeline-col">
+              <div class="pipeline-col-head">
+                <div class="pipeline-col-title-row">
+                  <span class="pipeline-col-title">Ready to Ship</span>
+                  <span class="pipeline-col-count">1</span>
+                </div>
+                <div class="pipeline-col-meta">96 pcs</div>
+              </div>
+              <div class="pipeline-col-body">
+                <div class="pipe-card">
+                  <div class="pipe-card-head">
+                    <span class="pipe-card-id">CT-0219</span>
+                    <span class="pipe-card-urgency green"></span>
+                  </div>
+                  <div class="pipe-card-client">Clearwater CrossFit</div>
+                  <div class="pipe-card-service">Screen print · 96 pcs</div>
+                  <div class="pipe-card-foot">
+                    <span class="pipe-card-due green">Pickup May 22</span>
+                    <span class="pipe-card-owner">Tati</span>
+                  </div>
+                  <div class="pipe-card-aging">0 days in stage</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SHIPPED -->
+            <div class="pipeline-col">
+              <div class="pipeline-col-head">
+                <div class="pipeline-col-title-row">
+                  <span class="pipeline-col-title">Shipped</span>
+                  <span class="pipeline-col-count">24</span>
+                </div>
+                <div class="pipeline-col-meta">Completed MTD</div>
+              </div>
+              <div class="pipeline-col-body">
+                <div class="pipe-card">
+                  <div class="pipe-card-head">
+                    <span class="pipe-card-id">CT-0210</span>
+                    <span class="pipe-card-urgency green"></span>
+                  </div>
+                  <div class="pipe-card-client">Champs Elysium</div>
+                  <div class="pipe-card-service">Screen print · 240 pcs</div>
+                  <div class="pipe-card-foot">
+                    <span class="pipe-card-due green">Shipped May 17</span>
+                    <span class="pipe-card-owner">Nick</span>
+                  </div>
+                </div>
+                <div class="pipe-card">
+                  <div class="pipe-card-head">
+                    <span class="pipe-card-id">CT-0209</span>
+                    <span class="pipe-card-urgency green"></span>
+                  </div>
+                  <div class="pipe-card-client">Kobie Marketing</div>
+                  <div class="pipe-card-service">Embroidery · 96 pcs</div>
+                  <div class="pipe-card-foot">
+                    <span class="pipe-card-due green">Shipped May 14</span>
+                    <span class="pipe-card-owner">Nick E</span>
+                  </div>
+                </div>
+                <div class="pipe-card">
+                  <div class="pipe-card-head">
+                    <span class="pipe-card-id">CT-0208</span>
+                    <span class="pipe-card-urgency green"></span>
+                  </div>
+                  <div class="pipe-card-client">Riviera Bay</div>
+                  <div class="pipe-card-service">Embroidery · 48 pcs</div>
+                  <div class="pipe-card-foot">
+                    <span class="pipe-card-due green">Shipped May 8</span>
+                    <span class="pipe-card-owner">Nick E</span>
+                  </div>
+                </div>
+                <div class="pipeline-col-empty" style="padding-top:0.5rem">21 more this month</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;text-align:center;padding:0.5rem 0 1rem;letter-spacing:0.06em">
+          Scroll horizontally to see all stages · Pipeline syncs from Printavo (once integrated)
+        </div>
       </div>
+
+      <!-- TABLE VIEW (hidden by default) -->
+      <div id="orders-table" style="display:none">
+        <div class="section-header">
+          <div class="section-title">All active jobs</div>
+          <div class="section-tag">May 2025</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Job</th><th>Client</th><th>Service</th><th>Qty</th><th>Due</th><th>Owner</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td data-label="Job">CT-0218</td><td data-label="Client">USF Football</td><td data-label="Service">Screen print</td><td data-label="Qty">60</td><td data-label="Due">May 20</td><td data-label="Owner">Nick</td><td data-label="Status"><span class="pill pill-amber">In production</span></td></tr>
+              <tr><td data-label="Job">CT-0217</td><td data-label="Client">Champs Elysium</td><td data-label="Service">Screen print</td><td data-label="Qty">120</td><td data-label="Due">May 21</td><td data-label="Owner">Nick</td><td data-label="Status"><span class="pill pill-amber">In production</span></td></tr>
+              <tr><td data-label="Job">CT-0216</td><td data-label="Client">Kobie Marketing</td><td data-label="Service">Embroidery</td><td data-label="Qty">48</td><td data-label="Due">May 23</td><td data-label="Owner">Nick E</td><td data-label="Status"><span class="pill pill-green">QC + pack</span></td></tr>
+              <tr><td data-label="Job">CT-0219</td><td data-label="Client">Clearwater CrossFit</td><td data-label="Service">Screen print</td><td data-label="Qty">96</td><td data-label="Due">May 22</td><td data-label="Owner">Tati</td><td data-label="Status"><span class="pill pill-green">Ready to ship</span></td></tr>
+              <tr><td data-label="Job">CT-0215</td><td data-label="Client">Tampa FC Youth</td><td data-label="Service">Screen print</td><td data-label="Qty">180</td><td data-label="Due">May 26</td><td data-label="Owner">Cody</td><td data-label="Status"><span class="pill pill-blue">Art approval</span></td></tr>
+              <tr><td data-label="Job">CT-0214</td><td data-label="Client">Riviera Bay Realty</td><td data-label="Service">Embroidery</td><td data-label="Qty">48</td><td data-label="Due">May 28</td><td data-label="Owner">Tati</td><td data-label="Status"><span class="pill pill-gray">Blanks ordered</span></td></tr>
+              <tr><td data-label="Job">CT-0213</td><td data-label="Client">St. Pete FC</td><td data-label="Service">Screen print</td><td data-label="Qty">200</td><td data-label="Due">May 30</td><td data-label="Owner">Nick</td><td data-label="Status"><span class="pill pill-amber">In production</span></td></tr>
+              <tr><td data-label="Job">CT-0212</td><td data-label="Client">Bay Area HVAC</td><td data-label="Service">Screen print</td><td data-label="Qty">36</td><td data-label="Due">Jun 2</td><td data-label="Owner">Cody</td><td data-label="Status"><span class="pill pill-blue">Art approval</span></td></tr>
+              <tr><td data-label="Job">CT-0211</td><td data-label="Client">Pinellas Schools</td><td data-label="Service">Screen print</td><td data-label="Qty">300</td><td data-label="Due">Jun 5</td><td data-label="Owner">Tati</td><td data-label="Status"><span class="pill pill-gray">Blanks ordered</span></td></tr>
+              <tr><td data-label="Job">CT-0220</td><td data-label="Client">St. Pete Running Club</td><td data-label="Service">Screen print</td><td data-label="Qty">200</td><td data-label="Due">Jun 8</td><td data-label="Owner">Cody</td><td data-label="Status"><span class="pill pill-gray">Quote</span></td></tr>
+              <tr><td data-label="Job">CT-0221</td><td data-label="Client">Ybor City Brewing</td><td data-label="Service">Screen print</td><td data-label="Qty">150</td><td data-label="Due">Jun 12</td><td data-label="Owner">Cody</td><td data-label="Status"><span class="pill pill-gray">Quote</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
     <!-- CALENDAR -->
@@ -2574,9 +3202,9 @@
   </div>
   <div class="chat-suggestions" id="suggestions">
     <span class="suggestion-chip" onclick="askQuestion(this.textContent)">Are we on pace to hit 15 orders this month?</span>
-    <span class="suggestion-chip" onclick="askQuestion(this.textContent)">Which clients haven't ordered in 60 days?</span>
+    <span class="suggestion-chip" onclick="askQuestion(this.textContent)">Which jobs are stuck in the pipeline?</span>
     <span class="suggestion-chip" onclick="askQuestion(this.textContent)">What's my revenue vs last month?</span>
-    <span class="suggestion-chip" onclick="askQuestion(this.textContent)">What jobs are due this week?</span>
+    <span class="suggestion-chip" onclick="askQuestion(this.textContent)">Which clients haven't ordered in 60 days?</span>
   </div>
   <div class="chat-input-row">
     <input class="chat-input" id="chat-input" type="text" placeholder="Ask anything about Craft Tee..." onkeydown="if(event.key==='Enter')sendChat()" />
@@ -2618,6 +3246,21 @@ function toggleSidebar() {
 function closeSidebar() {
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebar-backdrop').classList.remove('open');
+}
+
+// ORDERS VIEW TOGGLE
+function setOrdersView(view, btn) {
+  document.querySelectorAll('.view-toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('orders-pipeline').style.display = view === 'pipeline' ? 'block' : 'none';
+  document.getElementById('orders-table').style.display = view === 'table' ? 'block' : 'none';
+}
+
+// ORDERS PIPELINE FILTERS (visual demo only, real filtering wires up with Printavo data)
+function setOrdersFilter(filter, chip) {
+  document.querySelectorAll('.pipe-filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  // In production: filter cards by data attribute. For now, just visual state.
 }
 
 // DATE
@@ -2759,9 +3402,19 @@ CURRENT DATA (May 2025):
 - Annual order target: 180 orders. YTD: 52 of 75 expected by now.
 - Revenue MTD: $18,420 (up 12% vs April's $16,440). YTD: $82,600
 - Screen printing: $14,360 MTD. Embroidery: $4,060 MTD
-- Open jobs: 11. In production: 6. Ready to ship: 2. Completed MTD: 24
+- Open jobs: 11. Completed MTD: 24
 - Avg turnaround: 6.2 days (target is 5.5 days)
 - Outstanding invoices: Bay Area HVAC $1,440 (overdue May 10), Sun Coast Barbershop $2,760 (overdue May 1)
+
+PRODUCTION PIPELINE (live stages):
+- Quote: 2 jobs (CT-0220 St. Pete Running Club 200pcs Jun 8, CT-0221 Ybor City Brewing 150pcs Jun 12)
+- Art Approval: 2 jobs (CT-0215 Tampa FC Youth 180pcs due May 26 STUCK 3 days, CT-0212 Bay Area HVAC 36pcs Jun 2)
+- Blanks Ordered: 2 jobs (CT-0214 Riviera Bay 48pcs May 28, CT-0211 Pinellas Schools 300pcs Jun 5 STUCK 4 days)
+- In Production: 3 jobs (CT-0218 USF Football 60pcs due Tue May 20 URGENT, CT-0217 Champs Elysium 120pcs May 21, CT-0213 St. Pete FC 200pcs May 30)
+- QC + Pack: 1 job (CT-0216 Kobie Marketing 48pcs May 23)
+- Ready to Ship: 1 job (CT-0219 Clearwater CrossFit 96pcs pickup May 22)
+- Shipped MTD: 24 completed
+- STUCK alert: 2 jobs over 2 days in current stage (CT-0215 art, CT-0211 blanks)
 
 TOP CLIENTS: Champs Elysium Gym ($38,400 lifetime, 18 orders, last order May 17), Kobie Marketing ($24,600 lifetime, 11 orders, last order May 14), Tampa FC Youth ($12,800 lifetime), Riviera Bay Realty ($8,200 lifetime), Pinellas County Schools ($14,200 lifetime, due for outreach), Bay Area HVAC ($4,800 lifetime, due for outreach), Sun Coast Barbershop (lapsed 90+ days)
 
