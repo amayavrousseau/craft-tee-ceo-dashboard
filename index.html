@@ -1,0 +1,1987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Craft Tee — Operations Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0e0e0e;
+    --white: #f5f2ee;
+    --ink: #1a1a1a;
+    --muted: #6b6560;
+    --border: #d8d3cc;
+    --accent: #7BA9D9;
+    --accent-light: #eaf2fa;
+    --accent-mid: #a8c8e6;
+    --surface: #edeae5;
+    --surface2: #e5e1db;
+    --green: #2a6e4a;
+    --green-light: #e8f3ed;
+    --amber: #8a5c0a;
+    --amber-light: #fdf3e0;
+    --sidebar-w: 220px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--ink);
+    display: flex;
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--black);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0; top: 0;
+    z-index: 100;
+    padding: 0 0 2rem;
+  }
+
+  .sidebar-logo {
+    padding: 1.5rem 1.25rem 1rem;
+    border-bottom: 0.5px solid #2a2a2a;
+  }
+
+  .logo-mark {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--white);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .logo-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: #555;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .nav-section {
+    padding: 1.25rem 0 0;
+    flex: 1;
+  }
+
+  .nav-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #444;
+    padding: 0 1.25rem;
+    margin-bottom: 0.5rem;
+    margin-top: 1.25rem;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.55rem 1.25rem;
+    color: #888;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 400;
+    transition: all 0.12s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover { color: var(--white); background: #161616; }
+
+  .nav-item.active {
+    color: var(--white);
+    background: #161616;
+    border-left-color: var(--accent);
+  }
+
+  .nav-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #333;
+    flex-shrink: 0;
+  }
+
+  .nav-item.active .nav-dot { background: var(--accent); }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--accent);
+    color: white;
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* MAIN */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .topbar {
+    padding: 1.25rem 2rem;
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--white);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .page-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .date-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface);
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  .ai-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.12s;
+  }
+
+  .ai-btn:hover { background: #5a8cc4; }
+
+  /* CONTENT */
+  .content {
+    padding: 2rem;
+    flex: 1;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* STAT CARDS */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .stat-card:hover::before { opacity: 1; }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .stat-delta {
+    font-size: 11px;
+    margin-top: 5px;
+    color: var(--green);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .stat-delta.down { color: var(--accent); }
+
+  /* SPARKLINE */
+  .sparkline {
+    width: 100%;
+    height: 28px;
+    margin-top: 8px;
+    display: block;
+  }
+
+  .sparkline-path {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .sparkline-area {
+    fill: var(--accent);
+    opacity: 0.08;
+  }
+
+  .sparkline-dot {
+    fill: var(--accent);
+  }
+
+  /* GOAL TRACKER */
+  .goal-tracker {
+    background: linear-gradient(135deg, var(--accent-light) 0%, #f3f8fc 100%);
+    border: 0.5px solid var(--accent-mid);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .goal-info { flex: 1; min-width: 200px; }
+
+  .goal-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .goal-headline {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .goal-sub {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .goal-progress-wrap { flex: 1.2; min-width: 240px; }
+
+  .goal-bar-track {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 0.5px solid var(--accent-mid);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .goal-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 6px;
+    transition: width 0.8s ease;
+  }
+
+  .goal-stats {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .goal-stats strong { color: var(--ink); font-weight: 500; }
+
+  /* CATEGORY WIDGET GRID */
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .category-card {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .category-card:hover {
+    border-color: var(--accent-mid);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  }
+
+  .category-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .category-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .category-card-arrow {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1;
+  }
+
+  .category-card-value {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .category-card-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .category-card-sub.up { color: var(--green); }
+  .category-card-sub.down { color: var(--accent); }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+  }
+
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface);
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0.75rem 1.25rem;
+    text-align: left;
+    border-bottom: 0.5px solid var(--border);
+    background: var(--surface);
+    font-weight: 400;
+  }
+
+  tbody tr {
+    border-bottom: 0.5px solid var(--border);
+    transition: background 0.1s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface); }
+
+  tbody td {
+    padding: 0.8rem 1.25rem;
+    font-size: 13px;
+    color: var(--ink);
+    vertical-align: middle;
+  }
+
+  /* STATUS PILLS */
+  .pill {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    display: inline-block;
+  }
+
+  .pill-green { background: var(--green-light); color: var(--green); }
+  .pill-amber { background: var(--amber-light); color: var(--amber); }
+  .pill-red { background: var(--accent-light); color: var(--accent); }
+  .pill-gray { background: var(--surface2); color: var(--muted); }
+  .pill-blue { background: #e8edf8; color: #2a4a8a; }
+
+  /* TWO COL */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .card {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+
+  .card-title {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    font-weight: 300;
+    margin-bottom: 1rem;
+    color: var(--ink);
+  }
+
+  /* CLIENT ROW */
+  .client-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.6rem 0;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .client-row:last-child { border-bottom: none; }
+
+  .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    font-family: 'DM Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  .client-name { font-size: 13px; font-weight: 500; flex: 1; }
+  .client-meta { font-size: 11px; color: var(--muted); }
+
+  /* BAR CHART */
+  .bar-wrap { display: flex; flex-direction: column; gap: 10px; }
+
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+
+  .bar-label { font-size: 12px; color: var(--muted); width: 90px; flex-shrink: 0; text-align: right; }
+
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+
+  .bar-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); width: 50px; }
+
+  /* CALENDAR */
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  .cal-day-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    text-align: center;
+    padding: 4px 0;
+    text-transform: uppercase;
+  }
+
+  .cal-day {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--muted);
+    cursor: default;
+    position: relative;
+  }
+
+  .cal-day.has-job {
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .cal-day.today {
+    background: var(--accent);
+    color: white;
+    font-weight: 500;
+  }
+
+  .cal-day.empty { opacity: 0; }
+
+  /* STAFF */
+  .staff-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.75rem 0;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .staff-row:last-child { border-bottom: none; }
+
+  .staff-info { flex: 1; }
+  .staff-name { font-size: 13px; font-weight: 500; }
+  .staff-role { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+  .hours-bar-track {
+    width: 100px;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .hours-bar-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 3px;
+  }
+
+  .hours-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); width: 48px; text-align: right; }
+
+  /* AI CHAT PANEL */
+  .chat-overlay {
+    position: fixed;
+    right: 0; bottom: 0;
+    width: 380px;
+    height: 520px;
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: 12px 0 0 0;
+    box-shadow: -4px -4px 30px rgba(0,0,0,0.08);
+    display: none;
+    flex-direction: column;
+    z-index: 200;
+    overflow: hidden;
+  }
+
+  .chat-overlay.open { display: flex; }
+
+  .chat-header {
+    background: var(--black);
+    padding: 0.9rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .chat-header-title {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    color: var(--white);
+    font-weight: 300;
+  }
+
+  .chat-close {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    padding: 2px 6px;
+  }
+
+  .chat-close:hover { color: var(--white); }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .chat-msg {
+    max-width: 88%;
+    padding: 0.6rem 0.9rem;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .chat-msg.user {
+    background: var(--accent);
+    color: white;
+    align-self: flex-end;
+    border-radius: 8px 8px 2px 8px;
+  }
+
+  .chat-msg.ai {
+    background: var(--surface);
+    color: var(--ink);
+    align-self: flex-start;
+    border-radius: 8px 8px 8px 2px;
+  }
+
+  .chat-msg.ai strong { color: var(--accent); font-weight: 500; }
+
+  .chat-suggestions {
+    padding: 0 1rem 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .suggestion-chip {
+    font-size: 11px;
+    padding: 4px 10px;
+    border: 0.5px solid var(--border);
+    border-radius: 20px;
+    cursor: pointer;
+    color: var(--muted);
+    background: var(--white);
+    transition: all 0.1s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .suggestion-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  .chat-input-row {
+    padding: 0.75rem 1rem;
+    border-top: 0.5px solid var(--border);
+    display: flex;
+    gap: 8px;
+  }
+
+  .chat-input {
+    flex: 1;
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    background: var(--white);
+    color: var(--ink);
+  }
+
+  .chat-input:focus { border-color: var(--accent); }
+
+  .chat-send {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+  }
+
+  .chat-send:hover { background: #5a8cc4; }
+
+  .typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: 8px 12px;
+    background: var(--surface);
+    border-radius: 8px 8px 8px 2px;
+    align-self: flex-start;
+    width: fit-content;
+  }
+
+  .typing-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--muted);
+    animation: bounce 1.2s infinite;
+  }
+
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-5px); }
+  }
+
+  /* FADE IN */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel.active .stat-card,
+  .panel.active .table-wrap,
+  .panel.active .card {
+    animation: fadeUp 0.25s ease forwards;
+  }
+
+  .panel.active .stat-card:nth-child(1) { animation-delay: 0.05s; }
+  .panel.active .stat-card:nth-child(2) { animation-delay: 0.1s; }
+  .panel.active .stat-card:nth-child(3) { animation-delay: 0.15s; }
+  .panel.active .stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+  /* REVIEWS */
+  .review-card {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 10px;
+  }
+
+  .review-stars { color: #e8a020; font-size: 13px; margin-bottom: 4px; }
+  .review-text { font-size: 12px; color: var(--ink); line-height: 1.5; margin-bottom: 6px; }
+  .review-meta { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  /* LEADS */
+  .lead-stage {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .stage-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* MOBILE NAV TOGGLE */
+  .mobile-nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--ink);
+    cursor: pointer;
+    padding: 10px;
+    margin: -10px 4px -10px -8px;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0,0,0,0.08);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .mobile-nav-toggle svg { pointer-events: none; display: block; }
+  .mobile-nav-toggle:active { background: rgba(0,0,0,0.05); border-radius: 6px; }
+
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 90;
+  }
+
+  .sidebar-backdrop.open { display: block; }
+
+  /* TABLET */
+  @media (max-width: 1024px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .category-grid { grid-template-columns: repeat(2, 1fr); }
+    .content { padding: 1.5rem; }
+  }
+
+  /* MOBILE */
+  @media (max-width: 720px) {
+    body { font-size: 13px; }
+
+    .sidebar {
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      width: 260px;
+    }
+    .sidebar.open { transform: translateX(0); }
+
+    .main { margin-left: 0; }
+
+    .mobile-nav-toggle { display: inline-flex; }
+
+    .topbar {
+      padding: 0.85rem 1rem;
+      gap: 8px;
+    }
+
+    .page-title { font-size: 17px; }
+
+    .date-chip { display: none; }
+
+    .ai-btn {
+      padding: 6px 10px;
+      font-size: 11px;
+    }
+
+    .ai-btn span { display: none; }
+
+    .content { padding: 1rem; }
+
+    .stat-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .stat-card { padding: 0.85rem 0.9rem; }
+    .stat-value { font-size: 22px; }
+    .stat-label { font-size: 10px; }
+
+    .category-grid {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .two-col {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .card { padding: 1rem; }
+    .card-title { font-size: 13px; }
+
+    /* Tables scroll horizontally on mobile */
+    .table-wrap { overflow-x: auto; }
+    table { min-width: 560px; }
+    thead th, tbody td {
+      padding: 0.65rem 0.85rem;
+      font-size: 12px;
+    }
+
+    /* Goal tracker stacks */
+    .goal-tracker {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 1rem 1.1rem;
+      gap: 1rem;
+    }
+    .goal-headline { font-size: 19px; }
+
+    /* Bar chart labels shrink */
+    .bar-label { width: 70px; font-size: 11px; }
+    .bar-val { width: 60px; font-size: 10px; }
+
+    /* Calendar shrinks */
+    .cal-day { font-size: 10px; }
+
+    /* Staff rows wrap better */
+    .staff-row { flex-wrap: wrap; gap: 8px; }
+    .hours-bar-track { width: 80px; }
+
+    /* Chat overlay full-screen on mobile */
+    .chat-overlay {
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+      bottom: 0;
+      right: 0;
+    }
+
+    /* Section header */
+    .section-title { font-size: 14px; }
+  }
+
+  /* SMALL MOBILE */
+  @media (max-width: 400px) {
+    .stat-grid { grid-template-columns: 1fr; }
+    .content { padding: 0.85rem; }
+    .stat-value { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR BACKDROP -->
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">Craft Tee</div>
+    <div class="logo-sub">St. Petersburg, FL</div>
+  </div>
+  <nav class="nav-section">
+    <div class="nav-label">Overview</div>
+    <div class="nav-item active" onclick="showPanel('overview', this)">
+      <span class="nav-dot"></span> Dashboard
+    </div>
+
+    <div class="nav-label">Operations</div>
+    <div class="nav-item" onclick="showPanel('orders', this)">
+      <span class="nav-dot"></span> Orders + Jobs
+      <span class="nav-badge">3</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('calendar', this)">
+      <span class="nav-dot"></span> Production Calendar
+    </div>
+    <div class="nav-item" onclick="showPanel('inventory', this)">
+      <span class="nav-dot"></span> Inventory
+    </div>
+
+    <div class="nav-label">Clients</div>
+    <div class="nav-item" onclick="showPanel('clients', this)">
+      <span class="nav-dot"></span> Client Database
+    </div>
+    <div class="nav-item" onclick="showPanel('leads', this)">
+      <span class="nav-dot"></span> Lead Log
+      <span class="nav-badge">2</span>
+    </div>
+
+    <div class="nav-label">Business</div>
+    <div class="nav-item" onclick="showPanel('revenue', this)">
+      <span class="nav-dot"></span> Revenue
+    </div>
+    <div class="nav-item" onclick="showPanel('social', this)">
+      <span class="nav-dot"></span> Social Pulse
+    </div>
+    <div class="nav-item" onclick="showPanel('reviews', this)">
+      <span class="nav-dot"></span> Reviews
+    </div>
+    <div class="nav-item" onclick="showPanel('staff', this)">
+      <span class="nav-dot"></span> Staff
+    </div>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;flex:1;min-width:0">
+      <button class="mobile-nav-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="page-title" id="page-title">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <div class="date-chip" id="date-chip">Loading...</div>
+      <button class="ai-btn" onclick="toggleChat()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>Ask the agent</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <div class="panel active" id="panel-overview">
+
+      <!-- GOAL TRACKER HERO -->
+      <div class="goal-tracker">
+        <div class="goal-info">
+          <div class="goal-label">Monthly Goal · New Orders</div>
+          <div class="goal-headline">9 of 15 booked</div>
+          <div class="goal-sub">Day 18 of 31 · need 6 more orders in 13 days to hit goal</div>
+        </div>
+        <div class="goal-progress-wrap">
+          <div class="goal-bar-track"><div class="goal-bar-fill" style="width:60%"></div></div>
+          <div class="goal-stats">
+            <span><strong>60%</strong> to goal</span>
+            <span>Pace: <strong>~0.46/day</strong> needed</span>
+            <span>YTD: <strong>52 of 75</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOP KPIs -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Revenue MTD</div>
+          <div class="stat-value">$18,420</div>
+          <div class="stat-delta">+12% vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">In Production</div>
+          <div class="stat-value">6</div>
+          <div class="stat-delta">3 due this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">New Clients MTD</div>
+          <div class="stat-value">4</div>
+          <div class="stat-delta">+2 vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg Turnaround</div>
+          <div class="stat-value">6.2d</div>
+          <div class="stat-delta down">+0.8d vs target</div>
+        </div>
+      </div>
+
+      <!-- CATEGORY WIDGETS -->
+      <div class="section-header">
+        <div class="section-title">At a glance</div>
+        <div class="section-tag">Tap to drill in</div>
+      </div>
+      <div class="category-grid">
+
+        <div class="category-card" onclick="showPanel('inventory', document.querySelectorAll('.nav-item')[3])">
+          <div class="category-card-head">
+            <div class="category-card-label">Inventory</div>
+            <div class="category-card-arrow">→</div>
+          </div>
+          <div class="category-card-value">4 alerts</div>
+          <div class="category-card-sub down">Action needed</div>
+          <svg class="sparkline" viewBox="0 0 100 28" preserveAspectRatio="none">
+            <path class="sparkline-area" d="M0,16 L14,14 L28,18 L42,15 L56,12 L70,10 L84,8 L100,6 L100,28 L0,28 Z"/>
+            <path class="sparkline-path" d="M0,16 L14,14 L28,18 L42,15 L56,12 L70,10 L84,8 L100,6"/>
+            <circle class="sparkline-dot" cx="100" cy="6" r="2"/>
+          </svg>
+        </div>
+
+        <div class="category-card" onclick="showPanel('clients', document.querySelectorAll('.nav-item')[4])">
+          <div class="category-card-head">
+            <div class="category-card-label">Clients</div>
+            <div class="category-card-arrow">→</div>
+          </div>
+          <div class="category-card-value">47 total</div>
+          <div class="category-card-sub up">31 active in last 90d</div>
+          <svg class="sparkline" viewBox="0 0 100 28" preserveAspectRatio="none">
+            <path class="sparkline-area" d="M0,22 L14,20 L28,18 L42,16 L56,14 L70,11 L84,9 L100,6 L100,28 L0,28 Z"/>
+            <path class="sparkline-path" d="M0,22 L14,20 L28,18 L42,16 L56,14 L70,11 L84,9 L100,6"/>
+            <circle class="sparkline-dot" cx="100" cy="6" r="2"/>
+          </svg>
+        </div>
+
+        <div class="category-card" onclick="showPanel('leads', document.querySelectorAll('.nav-item')[5])">
+          <div class="category-card-head">
+            <div class="category-card-label">Leads</div>
+            <div class="category-card-arrow">→</div>
+          </div>
+          <div class="category-card-value">8 open</div>
+          <div class="category-card-sub up">62% close rate</div>
+          <svg class="sparkline" viewBox="0 0 100 28" preserveAspectRatio="none">
+            <path class="sparkline-area" d="M0,18 L14,16 L28,20 L42,14 L56,12 L70,15 L84,10 L100,8 L100,28 L0,28 Z"/>
+            <path class="sparkline-path" d="M0,18 L14,16 L28,20 L42,14 L56,12 L70,15 L84,10 L100,8"/>
+            <circle class="sparkline-dot" cx="100" cy="8" r="2"/>
+          </svg>
+        </div>
+
+        <div class="category-card" onclick="showPanel('reviews', document.querySelectorAll('.nav-item')[8])">
+          <div class="category-card-head">
+            <div class="category-card-label">Reviews</div>
+            <div class="category-card-arrow">→</div>
+          </div>
+          <div class="category-card-value">4.8 ★</div>
+          <div class="category-card-sub up">6 new this month</div>
+          <svg class="sparkline" viewBox="0 0 100 28" preserveAspectRatio="none">
+            <path class="sparkline-area" d="M0,12 L14,11 L28,14 L42,10 L56,9 L70,8 L84,7 L100,6 L100,28 L0,28 Z"/>
+            <path class="sparkline-path" d="M0,12 L14,11 L28,14 L42,10 L56,9 L70,8 L84,7 L100,6"/>
+            <circle class="sparkline-dot" cx="100" cy="6" r="2"/>
+          </svg>
+        </div>
+
+        <div class="category-card" onclick="showPanel('social', document.querySelectorAll('.nav-item')[7])">
+          <div class="category-card-head">
+            <div class="category-card-label">Social + Ads</div>
+            <div class="category-card-arrow">→</div>
+          </div>
+          <div class="category-card-value">5.9x ROAS</div>
+          <div class="category-card-sub up">+18% web visits MoM</div>
+          <svg class="sparkline" viewBox="0 0 100 28" preserveAspectRatio="none">
+            <path class="sparkline-area" d="M0,22 L14,20 L28,16 L42,14 L56,10 L70,8 L84,7 L100,5 L100,28 L0,28 Z"/>
+            <path class="sparkline-path" d="M0,22 L14,20 L28,16 L42,14 L56,10 L70,8 L84,7 L100,5"/>
+            <circle class="sparkline-dot" cx="100" cy="5" r="2"/>
+          </svg>
+        </div>
+
+        <div class="category-card" onclick="showPanel('staff', document.querySelectorAll('.nav-item')[9])">
+          <div class="category-card-head">
+            <div class="category-card-label">Staff</div>
+            <div class="category-card-arrow">→</div>
+          </div>
+          <div class="category-card-value">4 on today</div>
+          <div class="category-card-sub">126 / 152 hours</div>
+          <svg class="sparkline" viewBox="0 0 100 28" preserveAspectRatio="none">
+            <path class="sparkline-area" d="M0,14 L14,12 L28,15 L42,13 L56,11 L70,12 L84,10 L100,9 L100,28 L0,28 Z"/>
+            <path class="sparkline-path" d="M0,14 L14,12 L28,15 L42,13 L56,11 L70,12 L84,10 L100,9"/>
+            <circle class="sparkline-dot" cx="100" cy="9" r="2"/>
+          </svg>
+        </div>
+
+      </div>
+
+      <!-- TOP CLIENTS + JOBS DUE -->
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Top clients this month</div>
+          <div class="client-row">
+            <div class="avatar">CH</div>
+            <div style="flex:1"><div class="client-name">Champs Elysium Gym</div><div class="client-meta">Screen print, 240 pcs</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">$4,800</div>
+          </div>
+          <div class="client-row">
+            <div class="avatar">KB</div>
+            <div style="flex:1"><div class="client-name">Kobie Marketing</div><div class="client-meta">Embroidery, 96 pcs</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">$3,200</div>
+          </div>
+          <div class="client-row">
+            <div class="avatar">TF</div>
+            <div style="flex:1"><div class="client-name">Tampa FC Youth League</div><div class="client-meta">Screen print, 180 pcs</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">$2,700</div>
+          </div>
+          <div class="client-row">
+            <div class="avatar">RB</div>
+            <div style="flex:1"><div class="client-name">Riviera Bay Realty</div><div class="client-meta">Embroidery, 48 pcs</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">$1,440</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Revenue by service (May)</div>
+          <div class="bar-wrap">
+            <div class="bar-row">
+              <div class="bar-label">Screen Print</div>
+              <div class="bar-track"><div class="bar-fill" style="width:78%"></div></div>
+              <div class="bar-val">$14,360</div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">Embroidery</div>
+              <div class="bar-track"><div class="bar-fill" style="width:22%"></div></div>
+              <div class="bar-val">$4,060</div>
+            </div>
+          </div>
+
+          <div style="margin-top:1.5rem">
+            <div class="card-title">Jobs due this week</div>
+            <div class="client-row">
+              <div><div class="client-name" style="font-size:12px">USF Football, warmups</div><div class="client-meta">Due Tue 5/20, 60 pcs</div></div>
+              <span class="pill pill-amber">In production</span>
+            </div>
+            <div class="client-row">
+              <div><div class="client-name" style="font-size:12px">Champs Elysium tees reorder</div><div class="client-meta">Due Wed 5/21, 120 pcs</div></div>
+              <span class="pill pill-amber">In production</span>
+            </div>
+            <div class="client-row">
+              <div><div class="client-name" style="font-size:12px">Kobie, client event shirts</div><div class="client-meta">Due Fri 5/23, 48 pcs</div></div>
+              <span class="pill pill-green">Ready to ship</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="panel" id="panel-orders">
+
+      <div class="goal-tracker">
+        <div class="goal-info">
+          <div class="goal-label">Monthly Goal · New Orders</div>
+          <div class="goal-headline">9 of 15 booked</div>
+          <div class="goal-sub">Day 18 of 31 · pacing slightly behind</div>
+        </div>
+        <div class="goal-progress-wrap">
+          <div class="goal-bar-track"><div class="goal-bar-fill" style="width:60%"></div></div>
+          <div class="goal-stats">
+            <span><strong>60%</strong> to goal</span>
+            <span>Avg order value: <strong>$1,240</strong></span>
+            <span>If goal hit: <strong>~$18.6K</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Open Jobs</div><div class="stat-value">11</div></div>
+        <div class="stat-card"><div class="stat-label">In Production</div><div class="stat-value">6</div></div>
+        <div class="stat-card"><div class="stat-label">Ready to Ship</div><div class="stat-value">2</div></div>
+        <div class="stat-card"><div class="stat-label">Completed MTD</div><div class="stat-value">24</div></div>
+      </div>
+      <div class="section-header">
+        <div class="section-title">All active jobs</div>
+        <div class="section-tag">May 2025</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Job</th><th>Client</th><th>Service</th><th>Qty</th><th>Due</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>CT-0218</td><td>USF Football</td><td>Screen print</td><td>60</td><td>May 20</td><td><span class="pill pill-amber">In production</span></td></tr>
+            <tr><td>CT-0217</td><td>Champs Elysium</td><td>Screen print</td><td>120</td><td>May 21</td><td><span class="pill pill-amber">In production</span></td></tr>
+            <tr><td>CT-0216</td><td>Kobie Marketing</td><td>Embroidery</td><td>48</td><td>May 23</td><td><span class="pill pill-green">Ready to ship</span></td></tr>
+            <tr><td>CT-0215</td><td>Tampa FC Youth</td><td>Screen print</td><td>180</td><td>May 26</td><td><span class="pill pill-blue">Art approval</span></td></tr>
+            <tr><td>CT-0214</td><td>Riviera Bay Realty</td><td>Embroidery</td><td>48</td><td>May 28</td><td><span class="pill pill-gray">Queued</span></td></tr>
+            <tr><td>CT-0213</td><td>St. Pete FC</td><td>Screen print</td><td>200</td><td>May 30</td><td><span class="pill pill-gray">Queued</span></td></tr>
+            <tr><td>CT-0212</td><td>Bay Area HVAC</td><td>Screen print</td><td>36</td><td>Jun 2</td><td><span class="pill pill-gray">Queued</span></td></tr>
+            <tr><td>CT-0211</td><td>Pinellas Schools</td><td>Screen print</td><td>300</td><td>Jun 5</td><td><span class="pill pill-gray">Queued</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="panel" id="panel-calendar">
+      <div class="section-header">
+        <div class="section-title">Production calendar — May 2025</div>
+        <div class="section-tag">11 jobs scheduled</div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">May at a glance</div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">This week</div>
+          <div class="client-row">
+            <div style="width:38px;text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">MON<br><span style="font-size:16px;color:var(--ink);font-family:'Fraunces',serif">19</span></div>
+            <div><div class="client-name" style="font-size:12px">Artwork review — Tampa FC</div><div class="client-meta">48 pcs, screen print</div></div>
+            <span class="pill pill-blue">Art</span>
+          </div>
+          <div class="client-row">
+            <div style="width:38px;text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">TUE<br><span style="font-size:16px;color:var(--ink);font-family:'Fraunces',serif">20</span></div>
+            <div><div class="client-name" style="font-size:12px">USF Football warmups DUE</div><div class="client-meta">60 pcs, screen print</div></div>
+            <span class="pill pill-amber">Rush</span>
+          </div>
+          <div class="client-row">
+            <div style="width:38px;text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">WED<br><span style="font-size:16px;color:var(--ink);font-family:'Fraunces',serif">21</span></div>
+            <div><div class="client-name" style="font-size:12px">Champs Elysium reorder DUE</div><div class="client-meta">120 pcs, screen print</div></div>
+            <span class="pill pill-amber">Due</span>
+          </div>
+          <div class="client-row">
+            <div style="width:38px;text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">FRI<br><span style="font-size:16px;color:var(--ink);font-family:'Fraunces',serif">23</span></div>
+            <div><div class="client-name" style="font-size:12px">Kobie event shirts — pickup</div><div class="client-meta">48 pcs, embroidery</div></div>
+            <span class="pill pill-green">Pickup</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div class="panel" id="panel-inventory">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Reorder Alerts</div><div class="stat-value" style="color:var(--accent)">4</div><div class="stat-delta down">Action needed</div></div>
+        <div class="stat-card"><div class="stat-label">Ink Colors Active</div><div class="stat-value">18</div></div>
+        <div class="stat-card"><div class="stat-label">Thread Cones</div><div class="stat-value">94</div><div class="stat-delta">24 colors</div></div>
+        <div class="stat-card"><div class="stat-label">Screens in Rotation</div><div class="stat-value">28</div></div>
+      </div>
+
+      <div class="card" style="margin-bottom:1.25rem;background:var(--accent-light);border-color:var(--accent-mid)">
+        <div style="display:flex;align-items:flex-start;gap:12px">
+          <div style="font-family:'Fraunces',serif;font-size:18px;color:var(--accent);line-height:1">!</div>
+          <div style="flex:1">
+            <div style="font-family:'Fraunces',serif;font-size:14px;color:var(--ink);margin-bottom:4px">Garment stock note</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5">Craft Tee does not stock blank garments. Shirts, hoodies, and polos are ordered per job from S&amp;S Activewear or Sanmar once art is approved. Inventory below tracks production materials only.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header"><div class="section-title">Plastisol inks (Wilflex)</div><div class="section-tag">Updated May 17</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Color</th><th>SKU</th><th>On Hand</th><th>Reorder At</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>White (Top Score)</td><td>WLX-WHT-TS</td><td>1.2 gal</td><td>2.0 gal</td><td><span class="pill pill-red">Reorder now</span></td></tr>
+            <tr><td>Black (Super Black)</td><td>WLX-BLK-SB</td><td>3.4 gal</td><td>2.0 gal</td><td><span class="pill pill-green">OK</span></td></tr>
+            <tr><td>Athletic Red</td><td>WLX-RED-AT</td><td>1.8 gal</td><td>1.0 gal</td><td><span class="pill pill-green">OK</span></td></tr>
+            <tr><td>Royal Blue</td><td>WLX-BLU-RY</td><td>0.9 gal</td><td>1.0 gal</td><td><span class="pill pill-amber">Low</span></td></tr>
+            <tr><td>Athletic Gold</td><td>WLX-GLD-AT</td><td>1.5 gal</td><td>1.0 gal</td><td><span class="pill pill-green">OK</span></td></tr>
+            <tr><td>Kelly Green</td><td>WLX-GRN-KL</td><td>1.1 gal</td><td>1.0 gal</td><td><span class="pill pill-green">OK</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-header"><div class="section-title">Embroidery thread (Madeira Polyneon)</div><div class="section-tag">24 colors active</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Color</th><th>Code</th><th>Cones</th><th>Reorder At</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Black</td><td>MAD-1800</td><td>4</td><td>8</td><td><span class="pill pill-red">Reorder now</span></td></tr>
+            <tr><td>White</td><td>MAD-1801</td><td>11</td><td>8</td><td><span class="pill pill-green">OK</span></td></tr>
+            <tr><td>Navy</td><td>MAD-1843</td><td>9</td><td>6</td><td><span class="pill pill-green">OK</span></td></tr>
+            <tr><td>Athletic Gold</td><td>MAD-1824</td><td>7</td><td>6</td><td><span class="pill pill-green">OK</span></td></tr>
+            <tr><td>Red</td><td>MAD-1839</td><td>5</td><td>6</td><td><span class="pill pill-amber">Low</span></td></tr>
+            <tr><td>Royal Blue</td><td>MAD-1834</td><td>6</td><td>6</td><td><span class="pill pill-amber">Low</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Screens + emulsion</div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:13px">110 mesh screens</div><div class="client-meta">For bold spot color prints</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">10 / 12</div>
+            <span class="pill pill-green">OK</span>
+          </div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:13px">156 mesh screens</div><div class="client-meta">Standard print resolution</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">6 / 12</div>
+            <span class="pill pill-red">Reorder now</span>
+          </div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:13px">230 mesh screens</div><div class="client-meta">Fine detail, halftones</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">12 / 12</div>
+            <span class="pill pill-green">OK</span>
+          </div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Emulsion (Saati)</div><div class="client-meta">Photo-sensitive coating</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">2.1 gal</div>
+            <span class="pill pill-green">OK</span>
+          </div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Transfer paper (heat press)</div><div class="client-meta">Roll, 17" wide</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">0.5 roll</div>
+            <span class="pill pill-amber">Low</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Packaging + office</div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Poly mailers 11x17</div><div class="client-meta">Standard shipping bag</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">40 / 50</div>
+            <span class="pill pill-red">Reorder now</span>
+          </div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Poly mailers 14x19</div><div class="client-meta">Hoodies + bulk orders</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">120 / 50</div>
+            <span class="pill pill-green">OK</span>
+          </div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Hang tags (Craft Tee)</div><div class="client-meta">Custom branded</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">340</div>
+            <span class="pill pill-green">OK</span>
+          </div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Thank-you cards</div><div class="client-meta">Order inserts</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">80 / 100</div>
+            <span class="pill pill-amber">Low</span>
+          </div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Printer toner (front office)</div><div class="client-meta">Black, HP M404</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">1 spare</div>
+            <span class="pill pill-green">OK</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENTS -->
+    <div class="panel" id="panel-clients">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Total Clients</div><div class="stat-value">47</div></div>
+        <div class="stat-card"><div class="stat-label">Repeat (90d)</div><div class="stat-value">31</div></div>
+        <div class="stat-card"><div class="stat-label">New MTD</div><div class="stat-value">4</div></div>
+        <div class="stat-card"><div class="stat-label">Avg Order Value</div><div class="stat-value">$1,240</div></div>
+      </div>
+      <div class="section-header"><div class="section-title">Client database</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Client</th><th>Type</th><th>Last Order</th><th>Lifetime Spend</th><th>Orders</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Champs Elysium Gym</strong></td><td>Fitness</td><td>May 17</td><td>$38,400</td><td>18</td><td><span class="pill pill-green">Active</span></td></tr>
+            <tr><td><strong>Kobie Marketing</strong></td><td>Agency</td><td>May 14</td><td>$24,600</td><td>11</td><td><span class="pill pill-green">Active</span></td></tr>
+            <tr><td>Tampa FC Youth League</td><td>Sports</td><td>May 10</td><td>$12,800</td><td>6</td><td><span class="pill pill-green">Active</span></td></tr>
+            <tr><td>Riviera Bay Realty</td><td>Real Estate</td><td>May 8</td><td>$8,200</td><td>5</td><td><span class="pill pill-green">Active</span></td></tr>
+            <tr><td>St. Pete FC</td><td>Sports</td><td>Apr 22</td><td>$6,400</td><td>3</td><td><span class="pill pill-green">Active</span></td></tr>
+            <tr><td>Pinellas County Schools</td><td>Education</td><td>Apr 10</td><td>$14,200</td><td>7</td><td><span class="pill pill-amber">Due for outreach</span></td></tr>
+            <tr><td>Bay Area HVAC</td><td>Trades</td><td>Mar 28</td><td>$4,800</td><td>4</td><td><span class="pill pill-amber">Due for outreach</span></td></tr>
+            <tr><td>Sun Coast Barbershop</td><td>Retail</td><td>Feb 14</td><td>$2,100</td><td>2</td><td><span class="pill pill-red">Lapsed 90d+</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LEADS -->
+    <div class="panel" id="panel-leads">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Open Leads</div><div class="stat-value">8</div></div>
+        <div class="stat-card"><div class="stat-label">Quotes Sent</div><div class="stat-value">3</div></div>
+        <div class="stat-card"><div class="stat-label">Closed MTD</div><div class="stat-value">5</div></div>
+        <div class="stat-card"><div class="stat-label">Close Rate</div><div class="stat-value">62%</div></div>
+      </div>
+      <div class="section-header"><div class="section-title">Lead + inquiry log</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Lead</th><th>Source</th><th>Request</th><th>Value Est.</th><th>Stage</th><th>Follow-up</th></tr></thead>
+          <tbody>
+            <tr><td><strong>USF Football (Zach Cole)</strong></td><td>Referral</td><td>Team apparel — season</td><td>$12,000+</td><td><span class="pill pill-amber">Quote sent</span></td><td>May 22</td></tr>
+            <tr><td>Gulfport Marina</td><td>Instagram</td><td>Staff polos — 60 pcs</td><td>$1,800</td><td><span class="pill pill-amber">Quote sent</span></td><td>May 21</td></tr>
+            <tr><td>Ybor City Brewing</td><td>Google</td><td>Event tees — 150 pcs</td><td>$2,250</td><td><span class="pill pill-blue">New inquiry</span></td><td>May 20</td></tr>
+            <tr><td>Clearwater CrossFit</td><td>Referral</td><td>Member shirts — 80 pcs</td><td>$1,600</td><td><span class="pill pill-blue">New inquiry</span></td><td>May 20</td></tr>
+            <tr><td>St. Pete Running Club</td><td>Google</td><td>Race shirts — 200 pcs</td><td>$3,000</td><td><span class="pill pill-gray">Needs quote</span></td><td>May 23</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- REVENUE -->
+    <div class="panel" id="panel-revenue">
+
+      <div class="goal-tracker">
+        <div class="goal-info">
+          <div class="goal-label">Goal-Implied Revenue Target</div>
+          <div class="goal-headline">$18.6K target · $18,420 booked</div>
+          <div class="goal-sub">15 orders × $1,240 avg = $18,600 monthly target · 99% there</div>
+        </div>
+        <div class="goal-progress-wrap">
+          <div class="goal-bar-track"><div class="goal-bar-fill" style="width:99%"></div></div>
+          <div class="goal-stats">
+            <span><strong>99%</strong> of monthly target</span>
+            <span>Annual target: <strong>$223K</strong></span>
+            <span>YTD: <strong>$82.6K</strong> of <strong>$93K</strong> pace</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Revenue MTD</div><div class="stat-value">$18,420</div><div class="stat-delta">+12% vs April</div></div>
+        <div class="stat-card"><div class="stat-label">April Actual</div><div class="stat-value">$16,440</div></div>
+        <div class="stat-card"><div class="stat-label">Outstanding</div><div class="stat-value" style="color:var(--accent)">$4,200</div><div class="stat-delta down">2 invoices overdue</div></div>
+        <div class="stat-card"><div class="stat-label">YTD Revenue</div><div class="stat-value">$82,600</div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Monthly revenue — 2025</div>
+          <div class="bar-wrap">
+            <div class="bar-row"><div class="bar-label">January</div><div class="bar-track"><div class="bar-fill" style="width:55%"></div></div><div class="bar-val">$10,200</div></div>
+            <div class="bar-row"><div class="bar-label">February</div><div class="bar-track"><div class="bar-fill" style="width:72%"></div></div><div class="bar-val">$13,400</div></div>
+            <div class="bar-row"><div class="bar-label">March</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-val">$14,880</div></div>
+            <div class="bar-row"><div class="bar-label">April</div><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div><div class="bar-val">$16,440</div></div>
+            <div class="bar-row"><div class="bar-label">May (MTD)</div><div class="bar-track"><div class="bar-fill" style="width:99%;background:var(--accent)"></div></div><div class="bar-val">$18,420</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Outstanding invoices</div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Bay Area HVAC</div><div class="client-meta">Invoice CT-INV-0041 — due May 10</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">$1,440</div>
+          </div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Sun Coast Barbershop</div><div class="client-meta">Invoice CT-INV-0038 — due May 1</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">$2,760</div>
+          </div>
+          <div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border)">
+            <div class="card-title">Revenue by client type</div>
+            <div class="bar-wrap">
+              <div class="bar-row"><div class="bar-label">Sports</div><div class="bar-track"><div class="bar-fill" style="width:42%"></div></div><div class="bar-val">$7,740</div></div>
+              <div class="bar-row"><div class="bar-label">Corporate</div><div class="bar-track"><div class="bar-fill" style="width:35%"></div></div><div class="bar-val">$6,440</div></div>
+              <div class="bar-row"><div class="bar-label">Events</div><div class="bar-track"><div class="bar-fill" style="width:23%"></div></div><div class="bar-val">$4,240</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOCIAL PULSE -->
+    <div class="panel" id="panel-social">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Website Visits (30d)</div>
+          <div class="stat-value">3,420</div>
+          <div class="stat-delta">+18% MoM</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Meta Ads ROAS</div>
+          <div class="stat-value">5.9x</div>
+          <div class="stat-delta">$2,840 from $480</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">TikTok Views (30d)</div>
+          <div class="stat-value">84.6K</div>
+          <div class="stat-delta">+312 followers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">IG Engagement</div>
+          <div class="stat-value">4.2%</div>
+          <div class="stat-delta">+186 followers</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Meta Ads, last 30 days</div>
+          <div class="bar-wrap">
+            <div class="bar-row"><div class="bar-label">Spend</div><div class="bar-track"><div class="bar-fill" style="width:48%"></div></div><div class="bar-val">$480</div></div>
+            <div class="bar-row"><div class="bar-label">Revenue</div><div class="bar-track"><div class="bar-fill" style="width:88%;background:var(--green)"></div></div><div class="bar-val">$2,840</div></div>
+            <div class="bar-row"><div class="bar-label">Conversions</div><div class="bar-track"><div class="bar-fill" style="width:32%"></div></div><div class="bar-val">14</div></div>
+          </div>
+          <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:0.5px solid var(--border)">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px">Top performing ad</div>
+            <div style="font-size:13px;font-weight:500;margin-bottom:4px">"Built in St. Pete — Bulk pricing for teams + brands"</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5">CTR 3.4% · CPC $0.62 · CPA $34 · 9 of 14 conversions</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Website traffic sources</div>
+          <div class="bar-wrap">
+            <div class="bar-row"><div class="bar-label">Instagram</div><div class="bar-track"><div class="bar-fill" style="width:76%"></div></div><div class="bar-val">38%</div></div>
+            <div class="bar-row"><div class="bar-label">Google organic</div><div class="bar-track"><div class="bar-fill" style="width:48%"></div></div><div class="bar-val">24%</div></div>
+            <div class="bar-row"><div class="bar-label">Direct</div><div class="bar-track"><div class="bar-fill" style="width:44%"></div></div><div class="bar-val">22%</div></div>
+            <div class="bar-row"><div class="bar-label">Meta Ads</div><div class="bar-track"><div class="bar-fill" style="width:20%"></div></div><div class="bar-val">10%</div></div>
+            <div class="bar-row"><div class="bar-label">TikTok</div><div class="bar-track"><div class="bar-fill" style="width:8%"></div></div><div class="bar-val">4%</div></div>
+            <div class="bar-row"><div class="bar-label">Referral</div><div class="bar-track"><div class="bar-fill" style="width:4%"></div></div><div class="bar-val">2%</div></div>
+          </div>
+          <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;gap:12px">
+            <div style="flex:1">
+              <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase">Conversion</div>
+              <div style="font-family:'Fraunces',serif;font-size:20px;color:var(--ink)">2.8%</div>
+            </div>
+            <div style="flex:1">
+              <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase">Form Submits</div>
+              <div style="font-family:'Fraunces',serif;font-size:20px;color:var(--ink)">96</div>
+            </div>
+            <div style="flex:1">
+              <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase">Avg Session</div>
+              <div style="font-family:'Fraunces',serif;font-size:20px;color:var(--ink)">2:14</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">TikTok, top videos (30d)</div>
+          <div class="client-row">
+            <div class="avatar" style="background:#000;color:#fff;font-size:9px">TT</div>
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Press start to finish — Champs Elysium order</div><div class="client-meta">Posted May 8 · Process content</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">22.8K</div>
+          </div>
+          <div class="client-row">
+            <div class="avatar" style="background:#000;color:#fff;font-size:9px">TT</div>
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Inside the shop — embroidery setup</div><div class="client-meta">Posted May 12 · BTS</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">18.4K</div>
+          </div>
+          <div class="client-row">
+            <div class="avatar" style="background:#000;color:#fff;font-size:9px">TT</div>
+            <div style="flex:1"><div class="client-name" style="font-size:13px">St. Pete print shop tour</div><div class="client-meta">Posted May 4 · City-rooted</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">14.2K</div>
+          </div>
+          <div class="client-row">
+            <div class="avatar" style="background:#000;color:#fff;font-size:9px">TT</div>
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Kobie event drop — final reveal</div><div class="client-meta">Posted May 15 · Product</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">11.6K</div>
+          </div>
+          <div class="client-row">
+            <div class="avatar" style="background:#000;color:#fff;font-size:9px">TT</div>
+            <div style="flex:1"><div class="client-name" style="font-size:13px">How a screen gets made</div><div class="client-meta">Posted May 2 · Educational</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">9.8K</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Channel snapshot</div>
+          <div class="client-row">
+            <div class="avatar" style="background:#eaf2fa;color:#5a8cc4">IG</div>
+            <div style="flex:1"><div class="client-name">Instagram</div><div class="client-meta">12 posts · 38.4K reach · 4.2% eng.</div></div>
+            <div style="text-align:right">
+              <div style="font-family:'Fraunces',serif;font-size:14px;color:var(--ink)">4,820</div>
+              <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--green)">+186</div>
+            </div>
+          </div>
+          <div class="client-row">
+            <div class="avatar" style="background:#000;color:#fff">TT</div>
+            <div style="flex:1"><div class="client-name">TikTok</div><div class="client-meta">8 videos · 84.6K views · 6.1% eng.</div></div>
+            <div style="text-align:right">
+              <div style="font-family:'Fraunces',serif;font-size:14px;color:var(--ink)">2,140</div>
+              <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--green)">+312</div>
+            </div>
+          </div>
+          <div class="client-row">
+            <div class="avatar" style="background:#e8edf8;color:#2a4a8a">FB</div>
+            <div style="flex:1"><div class="client-name">Facebook</div><div class="client-meta">4 posts · 6.2K reach · 1.8% eng.</div></div>
+            <div style="text-align:right">
+              <div style="font-family:'Fraunces',serif;font-size:14px;color:var(--ink)">1,260</div>
+              <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--green)">+24</div>
+            </div>
+          </div>
+          <div class="client-row">
+            <div class="avatar" style="background:#e8f3ed;color:#2a6e4a">GB</div>
+            <div style="flex:1"><div class="client-name">Google Business</div><div class="client-meta">142 profile views · 38 calls</div></div>
+            <div style="text-align:right">
+              <div style="font-family:'Fraunces',serif;font-size:14px;color:var(--ink)">4.8★</div>
+              <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--green)">+6 reviews</div>
+            </div>
+          </div>
+
+          <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:0.5px solid var(--border)">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px">Attribution this month</div>
+            <div style="font-size:12px;color:var(--ink);line-height:1.7">
+              Social-attributed leads <strong style="color:var(--accent)">11 of 18</strong> new inquiries.<br>
+              Top converting content: process + BTS videos.<br>
+              Best ROAS channel: Meta Ads (5.9x).
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="panel" id="panel-reviews">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Google Rating</div><div class="stat-value">4.8</div><div class="stat-delta">42 reviews</div></div>
+        <div class="stat-card"><div class="stat-label">Reviews MTD</div><div class="stat-value">6</div></div>
+        <div class="stat-card"><div class="stat-label">5-Star Rate</div><div class="stat-value">88%</div></div>
+        <div class="stat-card"><div class="stat-label">Response Rate</div><div class="stat-value">100%</div></div>
+      </div>
+      <div class="section-header"><div class="section-title">Recent reviews</div></div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Ordered 240 gym tees and they came out perfect. Colors are crisp, print holds up after washing. Craft Tee always delivers on time and the quality is consistent every single order.</div>
+        <div class="review-meta">Champs Elysium Gym &nbsp;·&nbsp; May 14, 2025 &nbsp;·&nbsp; Google</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">We use Craft Tee for all our client merch drops. Turnaround is fast, communication is great, and the embroidery quality is seriously top notch. Our clients are always impressed.</div>
+        <div class="review-meta">Kobie Marketing &nbsp;·&nbsp; May 10, 2025 &nbsp;·&nbsp; Google</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★☆</div>
+        <div class="review-text">Good quality shirts and solid communication throughout. Would've given 5 stars but delivery was one day late. Will definitely order again though.</div>
+        <div class="review-meta">Tampa FC Youth &nbsp;·&nbsp; May 2, 2025 &nbsp;·&nbsp; Google</div>
+      </div>
+    </div>
+
+    <!-- STAFF -->
+    <div class="panel" id="panel-staff">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Total Staff</div><div class="stat-value">4</div></div>
+        <div class="stat-card"><div class="stat-label">On Today</div><div class="stat-value">4</div></div>
+        <div class="stat-card"><div class="stat-label">Hours This Week</div><div class="stat-value">126</div></div>
+        <div class="stat-card"><div class="stat-label">Jobs Assigned</div><div class="stat-value">11</div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Staff — this week</div>
+          <div class="staff-row">
+            <div class="avatar" style="background:#e8f3ed;color:#2a6e4a">CD</div>
+            <div class="staff-info"><div class="staff-name">Cody</div><div class="staff-role">Graphic Designer + Production Manager</div></div>
+            <div class="hours-bar-track"><div class="hours-bar-fill" style="width:90%"></div></div>
+            <div class="hours-val">36 / 40h</div>
+            <span class="pill pill-green">In</span>
+          </div>
+          <div class="staff-row">
+            <div class="avatar" style="background:#e8edf8;color:#2a4a8a">NK</div>
+            <div class="staff-info"><div class="staff-name">Nick</div><div class="staff-role">Screen Print Lead</div></div>
+            <div class="hours-bar-track"><div class="hours-bar-fill" style="width:85%"></div></div>
+            <div class="hours-val">34 / 40h</div>
+            <span class="pill pill-green">In</span>
+          </div>
+          <div class="staff-row">
+            <div class="avatar" style="background:#fdf3e0;color:#8a5c0a">NE</div>
+            <div class="staff-info"><div class="staff-name">Nick E</div><div class="staff-role">Embroidery Operator</div></div>
+            <div class="hours-bar-track"><div class="hours-bar-fill" style="width:75%"></div></div>
+            <div class="hours-val">30 / 40h</div>
+            <span class="pill pill-green">In</span>
+          </div>
+          <div class="staff-row">
+            <div class="avatar" style="background:#eaf2fa;color:#5a8cc4">TA</div>
+            <div class="staff-info"><div class="staff-name">Tati</div><div class="staff-role">Office Assistant</div></div>
+            <div class="hours-bar-track"><div class="hours-bar-fill" style="width:65%"></div></div>
+            <div class="hours-val">26 / 40h</div>
+            <span class="pill pill-green">In</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Job assignments</div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:12px">CT-0218 · USF warmups</div><div class="client-meta">Nick &nbsp;·&nbsp; Due May 20</div></div>
+            <span class="pill pill-amber">In production</span>
+          </div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:12px">CT-0217 · Champs Elysium reorder</div><div class="client-meta">Nick &nbsp;·&nbsp; Due May 21</div></div>
+            <span class="pill pill-amber">In production</span>
+          </div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:12px">CT-0216 · Kobie event shirts</div><div class="client-meta">Nick E &nbsp;·&nbsp; Due May 23</div></div>
+            <span class="pill pill-green">Ready</span>
+          </div>
+          <div class="client-row">
+            <div style="flex:1"><div class="client-name" style="font-size:12px">CT-0215 · Tampa FC</div><div class="client-meta">Cody &nbsp;·&nbsp; Art approval</div></div>
+            <span class="pill pill-blue">Art</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- AI CHAT -->
+<div class="chat-overlay" id="chat-overlay">
+  <div class="chat-header">
+    <div class="chat-header-title">Craft Tee Agent</div>
+    <button class="chat-close" onclick="toggleChat()">×</button>
+  </div>
+  <div class="chat-messages" id="chat-messages">
+    <div class="chat-msg ai">Hey Marquez. I have access to all your Craft Tee data. Ask me anything about orders, clients, revenue, staff, or inventory.</div>
+  </div>
+  <div class="chat-suggestions" id="suggestions">
+    <span class="suggestion-chip" onclick="askQuestion(this.textContent)">Are we on pace to hit 15 orders this month?</span>
+    <span class="suggestion-chip" onclick="askQuestion(this.textContent)">Which clients haven't ordered in 60 days?</span>
+    <span class="suggestion-chip" onclick="askQuestion(this.textContent)">What's my revenue vs last month?</span>
+    <span class="suggestion-chip" onclick="askQuestion(this.textContent)">What jobs are due this week?</span>
+  </div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chat-input" type="text" placeholder="Ask anything about Craft Tee..." onkeydown="if(event.key==='Enter')sendChat()" />
+    <button class="chat-send" onclick="sendChat()">Send</button>
+  </div>
+</div>
+
+<script>
+// NAV
+const titles = {
+  overview: 'Dashboard',
+  orders: 'Orders + Job Tracking',
+  calendar: 'Production Calendar',
+  inventory: 'Inventory',
+  clients: 'Client Database',
+  leads: 'Lead Log',
+  revenue: 'Revenue',
+  social: 'Social Media Pulse',
+  reviews: 'Reviews + Feedback',
+  staff: 'Staff Management'
+};
+
+function showPanel(id, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('page-title').textContent = titles[id];
+  // Auto-close sidebar on mobile after selection
+  if (window.innerWidth <= 720) closeSidebar();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-backdrop').classList.toggle('open');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-backdrop').classList.remove('open');
+}
+
+// DATE
+const d = new Date();
+document.getElementById('date-chip').textContent = d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric', year:'numeric'});
+
+// CALENDAR
+const calGrid = document.getElementById('cal-grid');
+const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const jobDays = [6, 9, 13, 14, 17, 20, 21, 23, 26, 28, 30];
+days.forEach(d => {
+  const el = document.createElement('div');
+  el.className = 'cal-day-label';
+  el.textContent = d;
+  calGrid.appendChild(el);
+});
+for (let i = 0; i < 3; i++) {
+  const el = document.createElement('div');
+  el.className = 'cal-day empty';
+  el.textContent = '';
+  calGrid.appendChild(el);
+}
+for (let i = 1; i <= 31; i++) {
+  const el = document.createElement('div');
+  el.textContent = i;
+  if (i === 18) el.className = 'cal-day today';
+  else if (jobDays.includes(i)) el.className = 'cal-day has-job';
+  else el.className = 'cal-day';
+  calGrid.appendChild(el);
+}
+
+// CHAT
+function toggleChat() {
+  const overlay = document.getElementById('chat-overlay');
+  overlay.classList.toggle('open');
+}
+
+const SYSTEM_PROMPT = `You are the Craft Tee business agent. Craft Tee is a custom screen printing and embroidery shop in St. Petersburg, Florida owned by Marquez Valdes-Scantling (MVS), a professional NFL player. You have access to their business data. Answer questions concisely and specifically using the data below. Be direct and useful. No filler.
+
+CURRENT DATA (May 2025):
+- Monthly goal: 15 new orders booked. Current: 9 of 15 (60% of goal, day 18 of 31). Pacing slightly behind, needs ~0.46 orders/day for remaining 13 days.
+- Goal-implied monthly revenue target (15 orders × $1,240 avg) = $18,600. Currently at $18,420 (99% of target).
+- Annual order target: 180 orders. YTD: 52 of 75 expected by now.
+- Revenue MTD: $18,420 (up 12% vs April's $16,440). YTD: $82,600
+- Screen printing: $14,360 MTD. Embroidery: $4,060 MTD
+- Open jobs: 11. In production: 6. Ready to ship: 2. Completed MTD: 24
+- Avg turnaround: 6.2 days (target is 5.5 days)
+- Outstanding invoices: Bay Area HVAC $1,440 (overdue May 10), Sun Coast Barbershop $2,760 (overdue May 1)
+
+TOP CLIENTS: Champs Elysium Gym ($38,400 lifetime, 18 orders, last order May 17), Kobie Marketing ($24,600 lifetime, 11 orders, last order May 14), Tampa FC Youth ($12,800 lifetime), Riviera Bay Realty ($8,200 lifetime), Pinellas County Schools ($14,200 lifetime, due for outreach), Bay Area HVAC ($4,800 lifetime, due for outreach), Sun Coast Barbershop (lapsed 90+ days)
+
+JOBS DUE THIS WEEK: CT-0218 USF Football warmups 60pcs due May 20 (in production), CT-0217 Champs Elysium reorder 120pcs due May 21 (in production), CT-0216 Kobie event shirts 48pcs due May 23 (ready to ship)
+
+INVENTORY MODEL: Craft Tee does not stock blank shirts. Garments are ordered per job from S&S Activewear or Sanmar once art is approved. Inventory is tracked for production materials only: plastisol inks (18 colors, Wilflex), embroidery thread (Madeira Polyneon, 24 colors), screens (110 mesh / 156 mesh / 230 mesh), emulsion, transfer paper, packaging, and office supplies.
+
+INVENTORY ALERTS: White plastisol ink (1.2 gal, below 2 gal threshold), Black Madeira thread #1800 (4 cones, below 8 cone threshold), 156 mesh screens (6 in rotation, target 12), 11x17 poly mailers (40 left, reorder at 50)
+
+LEADS: USF Football/Zach Cole (quote sent, $12,000+ potential, top priority), Gulfport Marina (quote sent, $1,800), Ybor City Brewing (new inquiry, $2,250), Clearwater CrossFit (new inquiry, $1,600), St. Pete Running Club (needs quote, $3,000). Close rate: 62%
+
+STAFF: Cody (Graphic Designer + Production Manager, 36/40h), Nick (Screen Print Lead, 34/40h), Nick E (Embroidery Operator, 30/40h), Tati (Office Assistant, 26/40h)
+
+SOCIAL + MARKETING (last 30 days):
+- Instagram: 4,820 followers (+186), 12 posts, 38,400 reach, 4.2% engagement
+- TikTok: 2,140 followers (+312), 8 videos, 84,600 views, top video 22,800 views
+- Meta Ads: $480 spend, $2,840 attributed revenue, ROAS 5.9x, 14 conversions, $34 CPA
+- Website: 3,420 visits (+18% MoM), 2.8% conversion rate, 96 form submissions, top source Instagram (38%), Google organic (24%), Direct (22%)
+
+MINIMUMS: Screen print 20 pcs, embroidery 12 pcs. DTG discontinued.
+
+Keep answers short, punchy, and specific. Use numbers. No fluff.`;
+
+async function callClaude(userMessage, history) {
+  const messages = history.concat([{ role: 'user', content: userMessage }]);
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: SYSTEM_PROMPT,
+      messages: messages
+    })
+  });
+  const data = await response.json();
+  return data.content[0].text;
+}
+
+let chatHistory = [];
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  await askQuestion(msg);
+}
+
+async function askQuestion(msg) {
+  document.getElementById('suggestions').style.display = 'none';
+  const msgs = document.getElementById('chat-messages');
+
+  const userEl = document.createElement('div');
+  userEl.className = 'chat-msg user';
+  userEl.textContent = msg;
+  msgs.appendChild(userEl);
+
+  const typingEl = document.createElement('div');
+  typingEl.className = 'typing-indicator';
+  typingEl.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  msgs.appendChild(typingEl);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  try {
+    const reply = await callClaude(msg, chatHistory);
+    typingEl.remove();
+    chatHistory.push({ role: 'user', content: msg });
+    chatHistory.push({ role: 'assistant', content: reply });
+
+    const aiEl = document.createElement('div');
+    aiEl.className = 'chat-msg ai';
+    aiEl.innerHTML = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    msgs.appendChild(aiEl);
+    msgs.scrollTop = msgs.scrollHeight;
+  } catch (e) {
+    typingEl.remove();
+    const errEl = document.createElement('div');
+    errEl.className = 'chat-msg ai';
+    errEl.textContent = 'Something went wrong. Try again.';
+    msgs.appendChild(errEl);
+  }
+}
+</script>
+</body>
+</html>
