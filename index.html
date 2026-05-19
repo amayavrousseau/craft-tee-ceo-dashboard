@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Craft Tee — Operations Dashboard</title>
+<title>Craft Tee · Operations Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -33,6 +33,7 @@
     display: flex;
     min-height: 100vh;
     font-size: 14px;
+    overflow-x: hidden;
   }
 
   /* SIDEBAR */
@@ -595,21 +596,146 @@
     color: var(--muted);
     cursor: default;
     position: relative;
+    transition: all 0.12s;
   }
 
   .cal-day.has-job {
     background: var(--accent-light);
-    color: var(--accent);
+    color: var(--accent-deep);
     font-weight: 500;
+    cursor: pointer;
+  }
+
+  .cal-day.has-job::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .cal-day.has-job:hover {
+    background: var(--accent-mid);
+    color: white;
   }
 
   .cal-day.today {
     background: var(--accent);
     color: white;
     font-weight: 500;
+    cursor: pointer;
+  }
+
+  .cal-day.today.has-job::after {
+    background: white;
+  }
+
+  .cal-day.selected {
+    outline: 2px solid var(--accent-deep);
+    outline-offset: 1px;
   }
 
   .cal-day.empty { opacity: 0; }
+
+  /* CALENDAR DETAIL PANEL */
+  .cal-detail {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-top: 1rem;
+    animation: fadeUp 0.2s ease;
+  }
+
+  .cal-detail-empty {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    font-style: italic;
+    padding: 1rem 0;
+  }
+
+  .cal-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 0.5px solid var(--border-light);
+  }
+
+  .cal-detail-date {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--ink);
+  }
+
+  .cal-detail-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent-deep);
+    background: var(--accent-light);
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .cal-job-card {
+    padding: 0.85rem;
+    border: 0.5px solid var(--border-light);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: var(--paper, #faf8f4);
+    transition: all 0.1s;
+  }
+
+  .cal-job-card:last-child { margin-bottom: 0; }
+
+  .cal-job-card:hover {
+    border-color: var(--accent-mid);
+    background: var(--accent-light);
+  }
+
+  .cal-job-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    gap: 10px;
+  }
+
+  .cal-job-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+
+  .cal-job-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .cal-job-meta {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .cal-job-meta span {
+    display: inline-block;
+    margin-right: 12px;
+  }
+
+  .cal-job-meta strong { color: var(--ink); font-weight: 500; }
 
   /* STAFF */
   .staff-row {
@@ -849,26 +975,174 @@
     flex-shrink: 0;
   }
 
-  /* MOBILE NAV TOGGLE */
+  /* KPI PANEL STYLES */
+  .kpi-section {
+    margin-bottom: 2rem;
+  }
+
+  .kpi-section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .kpi-section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent-deep);
+    letter-spacing: 0.12em;
+  }
+
+  .kpi-section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    flex: 1;
+  }
+
+  .kpi-section-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    line-height: 1.55;
+    max-width: 720px;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .kpi-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .kpi-card {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+  }
+
+  .kpi-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .kpi-card-value {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .kpi-card-value.green { color: var(--green); }
+  .kpi-card-value.amber { color: var(--amber); }
+  .kpi-card-value.red { color: var(--red, #b03a3a); }
+
+  .kpi-card-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 5px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .kpi-progress {
+    margin-top: 10px;
+    height: 5px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .kpi-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+  }
+
+  .kpi-progress-fill.green { background: var(--green); }
+  .kpi-progress-fill.amber { background: var(--amber); }
+  .kpi-progress-fill.red { background: var(--red, #b03a3a); }
+
+  /* Per-employee bar */
+  .emp-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.55rem 0;
+    border-bottom: 0.5px solid var(--border-light);
+  }
+
+  .emp-row:last-child { border-bottom: none; }
+
+  .emp-name { font-size: 13px; min-width: 90px; }
+  .emp-bar-track { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .emp-bar-fill { height: 100%; border-radius: 3px; background: var(--accent); }
+  .emp-bar-fill.green { background: var(--green); }
+  .emp-bar-fill.amber { background: var(--amber); }
+  .emp-bar-fill.red { background: var(--red, #b03a3a); }
+  .emp-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); min-width: 50px; text-align: right; }
+
+  /* Benchmark callout */
+  .benchmark {
+    background: var(--accent-light);
+    border: 0.5px solid var(--accent-mid);
+    border-radius: 8px;
+    padding: 0.75rem 0.9rem;
+    margin-top: 0.85rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .benchmark-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .benchmark-text {
+    font-size: 11.5px;
+    color: var(--ink);
+    line-height: 1.55;
+  }
+
+  .benchmark-text strong { color: var(--accent-deep); }
+
+
   .mobile-nav-toggle {
     display: none;
     background: none;
     border: none;
     color: var(--ink);
     cursor: pointer;
-    padding: 10px;
-    margin: -10px 4px -10px -8px;
-    align-items: center;
-    justify-content: center;
-    min-width: 44px;
-    min-height: 44px;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: rgba(0,0,0,0.08);
-    -webkit-appearance: none;
-    appearance: none;
+    padding: 4px 8px;
+    margin-right: 8px;
   }
-  .mobile-nav-toggle svg { pointer-events: none; display: block; }
-  .mobile-nav-toggle:active { background: rgba(0,0,0,0.05); border-radius: 6px; }
 
   .sidebar-backdrop {
     display: none;
@@ -884,6 +1158,7 @@
   @media (max-width: 1024px) {
     .stat-grid { grid-template-columns: repeat(2, 1fr); }
     .category-grid { grid-template-columns: repeat(2, 1fr); }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
     .content { padding: 1.5rem; }
   }
 
@@ -900,7 +1175,7 @@
 
     .main { margin-left: 0; }
 
-    .mobile-nav-toggle { display: inline-flex; }
+    .mobile-nav-toggle { display: block; }
 
     .topbar {
       padding: 0.85rem 1rem;
@@ -942,12 +1217,68 @@
     .card { padding: 1rem; }
     .card-title { font-size: 13px; }
 
-    /* Tables scroll horizontally on mobile */
-    .table-wrap { overflow-x: auto; }
-    table { min-width: 560px; }
-    thead th, tbody td {
-      padding: 0.65rem 0.85rem;
-      font-size: 12px;
+    /* Tables convert to stacked card view on mobile */
+    .table-wrap {
+      overflow-x: visible;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+    }
+
+    table, thead, tbody, tr, td, th {
+      display: block;
+      width: 100%;
+    }
+
+    table { min-width: 0; }
+
+    thead { display: none; }
+
+    tbody tr {
+      background: var(--white);
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      padding: 0.9rem 1rem;
+    }
+
+    tbody tr:hover { background: var(--white); }
+
+    tbody td {
+      padding: 4px 0;
+      font-size: 13px;
+      border: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      text-align: right;
+    }
+
+    tbody td::before {
+      content: attr(data-label);
+      font-family: 'DM Mono', monospace;
+      font-size: 9.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+      flex-shrink: 0;
+      text-align: left;
+    }
+
+    tbody td:first-child {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 6px;
+      padding-bottom: 8px;
+      border-bottom: 0.5px solid var(--border-light);
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    tbody td:first-child::before {
+      display: none;
     }
 
     /* Goal tracker stacks */
@@ -959,16 +1290,26 @@
     }
     .goal-headline { font-size: 19px; }
 
-    /* Bar chart labels shrink */
-    .bar-label { width: 70px; font-size: 11px; }
-    .bar-val { width: 60px; font-size: 10px; }
+    .goal-stats {
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-start;
+    }
+
+    /* Bar chart shrinks but stays readable */
+    .bar-label { width: auto; min-width: 70px; font-size: 11px; }
+    .bar-val { width: auto; min-width: 50px; font-size: 10px; }
+    .bar-wrap { gap: 8px; }
 
     /* Calendar shrinks */
-    .cal-day { font-size: 10px; }
+    .cal-day { font-size: 11px; min-height: 36px; }
 
     /* Staff rows wrap better */
     .staff-row { flex-wrap: wrap; gap: 8px; }
     .hours-bar-track { width: 80px; }
+
+    /* Client rows wrap on mobile */
+    .client-row { flex-wrap: wrap; }
 
     /* Chat overlay full-screen on mobile */
     .chat-overlay {
@@ -981,6 +1322,23 @@
 
     /* Section header */
     .section-title { font-size: 14px; }
+
+    /* KPI grids stack on mobile */
+    .kpi-grid { grid-template-columns: 1fr; gap: 8px; }
+    .kpi-grid-2 { grid-template-columns: 1fr; }
+    .kpi-section-title { font-size: 15px; }
+    .kpi-card { padding: 0.9rem 1rem; }
+    .kpi-card-value { font-size: 22px; }
+    .emp-name { min-width: 70px; font-size: 12px; }
+
+    /* Review cards */
+    .review-card { padding: 0.9rem; }
+    .review-text { font-size: 13px; }
+
+    /* Calendar week view rows */
+    .panel .client-row > div[style*="width:38px"] {
+      width: 32px !important;
+    }
   }
 
   /* SMALL MOBILE */
@@ -1018,6 +1376,9 @@
     </div>
     <div class="nav-item" onclick="showPanel('inventory', this)">
       <span class="nav-dot"></span> Inventory
+    </div>
+    <div class="nav-item" onclick="showPanel('kpis', this)">
+      <span class="nav-dot"></span> Production KPIs
     </div>
 
     <div class="nav-label">Clients</div>
@@ -1130,7 +1491,7 @@
           </svg>
         </div>
 
-        <div class="category-card" onclick="showPanel('clients', document.querySelectorAll('.nav-item')[4])">
+        <div class="category-card" onclick="showPanel('clients', document.querySelectorAll('.nav-item')[5])">
           <div class="category-card-head">
             <div class="category-card-label">Clients</div>
             <div class="category-card-arrow">→</div>
@@ -1144,7 +1505,7 @@
           </svg>
         </div>
 
-        <div class="category-card" onclick="showPanel('leads', document.querySelectorAll('.nav-item')[5])">
+        <div class="category-card" onclick="showPanel('leads', document.querySelectorAll('.nav-item')[6])">
           <div class="category-card-head">
             <div class="category-card-label">Leads</div>
             <div class="category-card-arrow">→</div>
@@ -1158,7 +1519,7 @@
           </svg>
         </div>
 
-        <div class="category-card" onclick="showPanel('reviews', document.querySelectorAll('.nav-item')[8])">
+        <div class="category-card" onclick="showPanel('reviews', document.querySelectorAll('.nav-item')[9])">
           <div class="category-card-head">
             <div class="category-card-label">Reviews</div>
             <div class="category-card-arrow">→</div>
@@ -1172,7 +1533,7 @@
           </svg>
         </div>
 
-        <div class="category-card" onclick="showPanel('social', document.querySelectorAll('.nav-item')[7])">
+        <div class="category-card" onclick="showPanel('social', document.querySelectorAll('.nav-item')[8])">
           <div class="category-card-head">
             <div class="category-card-label">Social + Ads</div>
             <div class="category-card-arrow">→</div>
@@ -1186,7 +1547,7 @@
           </svg>
         </div>
 
-        <div class="category-card" onclick="showPanel('staff', document.querySelectorAll('.nav-item')[9])">
+        <div class="category-card" onclick="showPanel('staff', document.querySelectorAll('.nav-item')[10])">
           <div class="category-card-head">
             <div class="category-card-label">Staff</div>
             <div class="category-card-arrow">→</div>
@@ -1295,14 +1656,14 @@
         <table>
           <thead><tr><th>Job</th><th>Client</th><th>Service</th><th>Qty</th><th>Due</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td>CT-0218</td><td>USF Football</td><td>Screen print</td><td>60</td><td>May 20</td><td><span class="pill pill-amber">In production</span></td></tr>
-            <tr><td>CT-0217</td><td>Champs Elysium</td><td>Screen print</td><td>120</td><td>May 21</td><td><span class="pill pill-amber">In production</span></td></tr>
-            <tr><td>CT-0216</td><td>Kobie Marketing</td><td>Embroidery</td><td>48</td><td>May 23</td><td><span class="pill pill-green">Ready to ship</span></td></tr>
-            <tr><td>CT-0215</td><td>Tampa FC Youth</td><td>Screen print</td><td>180</td><td>May 26</td><td><span class="pill pill-blue">Art approval</span></td></tr>
-            <tr><td>CT-0214</td><td>Riviera Bay Realty</td><td>Embroidery</td><td>48</td><td>May 28</td><td><span class="pill pill-gray">Queued</span></td></tr>
-            <tr><td>CT-0213</td><td>St. Pete FC</td><td>Screen print</td><td>200</td><td>May 30</td><td><span class="pill pill-gray">Queued</span></td></tr>
-            <tr><td>CT-0212</td><td>Bay Area HVAC</td><td>Screen print</td><td>36</td><td>Jun 2</td><td><span class="pill pill-gray">Queued</span></td></tr>
-            <tr><td>CT-0211</td><td>Pinellas Schools</td><td>Screen print</td><td>300</td><td>Jun 5</td><td><span class="pill pill-gray">Queued</span></td></tr>
+            <tr><td data-label="Job">CT-0218</td><td data-label="Client">USF Football</td><td data-label="Service">Screen print</td><td data-label="Qty">60</td><td data-label="Due">May 20</td><td data-label="Status"><span class="pill pill-amber">In production</span></td></tr>
+            <tr><td data-label="Job">CT-0217</td><td data-label="Client">Champs Elysium</td><td data-label="Service">Screen print</td><td data-label="Qty">120</td><td data-label="Due">May 21</td><td data-label="Status"><span class="pill pill-amber">In production</span></td></tr>
+            <tr><td data-label="Job">CT-0216</td><td data-label="Client">Kobie Marketing</td><td data-label="Service">Embroidery</td><td data-label="Qty">48</td><td data-label="Due">May 23</td><td data-label="Status"><span class="pill pill-green">Ready to ship</span></td></tr>
+            <tr><td data-label="Job">CT-0215</td><td data-label="Client">Tampa FC Youth</td><td data-label="Service">Screen print</td><td data-label="Qty">180</td><td data-label="Due">May 26</td><td data-label="Status"><span class="pill pill-blue">Art approval</span></td></tr>
+            <tr><td data-label="Job">CT-0214</td><td data-label="Client">Riviera Bay Realty</td><td data-label="Service">Embroidery</td><td data-label="Qty">48</td><td data-label="Due">May 28</td><td data-label="Status"><span class="pill pill-gray">Queued</span></td></tr>
+            <tr><td data-label="Job">CT-0213</td><td data-label="Client">St. Pete FC</td><td data-label="Service">Screen print</td><td data-label="Qty">200</td><td data-label="Due">May 30</td><td data-label="Status"><span class="pill pill-gray">Queued</span></td></tr>
+            <tr><td data-label="Job">CT-0212</td><td data-label="Client">Bay Area HVAC</td><td data-label="Service">Screen print</td><td data-label="Qty">36</td><td data-label="Due">Jun 2</td><td data-label="Status"><span class="pill pill-gray">Queued</span></td></tr>
+            <tr><td data-label="Job">CT-0211</td><td data-label="Client">Pinellas Schools</td><td data-label="Service">Screen print</td><td data-label="Qty">300</td><td data-label="Due">Jun 5</td><td data-label="Status"><span class="pill pill-gray">Queued</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -1311,19 +1672,22 @@
     <!-- CALENDAR -->
     <div class="panel" id="panel-calendar">
       <div class="section-header">
-        <div class="section-title">Production calendar — May 2025</div>
+        <div class="section-title">Production calendar · May 2025</div>
         <div class="section-tag">11 jobs scheduled</div>
       </div>
       <div class="two-col">
         <div class="card">
           <div class="card-title">May at a glance</div>
           <div class="cal-grid" id="cal-grid"></div>
+          <div id="cal-detail" class="cal-detail" style="margin-top:1.25rem">
+            <div class="cal-detail-empty">Tap a highlighted day to see jobs.</div>
+          </div>
         </div>
         <div class="card">
           <div class="card-title">This week</div>
           <div class="client-row">
             <div style="width:38px;text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">MON<br><span style="font-size:16px;color:var(--ink);font-family:'Fraunces',serif">19</span></div>
-            <div><div class="client-name" style="font-size:12px">Artwork review — Tampa FC</div><div class="client-meta">48 pcs, screen print</div></div>
+            <div><div class="client-name" style="font-size:12px">Artwork review, Tampa FC</div><div class="client-meta">48 pcs, screen print</div></div>
             <span class="pill pill-blue">Art</span>
           </div>
           <div class="client-row">
@@ -1338,7 +1702,7 @@
           </div>
           <div class="client-row">
             <div style="width:38px;text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">FRI<br><span style="font-size:16px;color:var(--ink);font-family:'Fraunces',serif">23</span></div>
-            <div><div class="client-name" style="font-size:12px">Kobie event shirts — pickup</div><div class="client-meta">48 pcs, embroidery</div></div>
+            <div><div class="client-name" style="font-size:12px">Kobie event shirts pickup</div><div class="client-meta">48 pcs, embroidery</div></div>
             <span class="pill pill-green">Pickup</span>
           </div>
         </div>
@@ -1369,12 +1733,12 @@
         <table>
           <thead><tr><th>Color</th><th>SKU</th><th>On Hand</th><th>Reorder At</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td>White (Top Score)</td><td>WLX-WHT-TS</td><td>1.2 gal</td><td>2.0 gal</td><td><span class="pill pill-red">Reorder now</span></td></tr>
-            <tr><td>Black (Super Black)</td><td>WLX-BLK-SB</td><td>3.4 gal</td><td>2.0 gal</td><td><span class="pill pill-green">OK</span></td></tr>
-            <tr><td>Athletic Red</td><td>WLX-RED-AT</td><td>1.8 gal</td><td>1.0 gal</td><td><span class="pill pill-green">OK</span></td></tr>
-            <tr><td>Royal Blue</td><td>WLX-BLU-RY</td><td>0.9 gal</td><td>1.0 gal</td><td><span class="pill pill-amber">Low</span></td></tr>
-            <tr><td>Athletic Gold</td><td>WLX-GLD-AT</td><td>1.5 gal</td><td>1.0 gal</td><td><span class="pill pill-green">OK</span></td></tr>
-            <tr><td>Kelly Green</td><td>WLX-GRN-KL</td><td>1.1 gal</td><td>1.0 gal</td><td><span class="pill pill-green">OK</span></td></tr>
+            <tr><td data-label="Color">White (Top Score)</td><td data-label="SKU">WLX-WHT-TS</td><td data-label="On Hand">1.2 gal</td><td data-label="Reorder At">2.0 gal</td><td data-label="Status"><span class="pill pill-red">Reorder now</span></td></tr>
+            <tr><td data-label="Color">Black (Super Black)</td><td data-label="SKU">WLX-BLK-SB</td><td data-label="On Hand">3.4 gal</td><td data-label="Reorder At">2.0 gal</td><td data-label="Status"><span class="pill pill-green">OK</span></td></tr>
+            <tr><td data-label="Color">Athletic Red</td><td data-label="SKU">WLX-RED-AT</td><td data-label="On Hand">1.8 gal</td><td data-label="Reorder At">1.0 gal</td><td data-label="Status"><span class="pill pill-green">OK</span></td></tr>
+            <tr><td data-label="Color">Royal Blue</td><td data-label="SKU">WLX-BLU-RY</td><td data-label="On Hand">0.9 gal</td><td data-label="Reorder At">1.0 gal</td><td data-label="Status"><span class="pill pill-amber">Low</span></td></tr>
+            <tr><td data-label="Color">Athletic Gold</td><td data-label="SKU">WLX-GLD-AT</td><td data-label="On Hand">1.5 gal</td><td data-label="Reorder At">1.0 gal</td><td data-label="Status"><span class="pill pill-green">OK</span></td></tr>
+            <tr><td data-label="Color">Kelly Green</td><td data-label="SKU">WLX-GRN-KL</td><td data-label="On Hand">1.1 gal</td><td data-label="Reorder At">1.0 gal</td><td data-label="Status"><span class="pill pill-green">OK</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -1384,12 +1748,12 @@
         <table>
           <thead><tr><th>Color</th><th>Code</th><th>Cones</th><th>Reorder At</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td>Black</td><td>MAD-1800</td><td>4</td><td>8</td><td><span class="pill pill-red">Reorder now</span></td></tr>
-            <tr><td>White</td><td>MAD-1801</td><td>11</td><td>8</td><td><span class="pill pill-green">OK</span></td></tr>
-            <tr><td>Navy</td><td>MAD-1843</td><td>9</td><td>6</td><td><span class="pill pill-green">OK</span></td></tr>
-            <tr><td>Athletic Gold</td><td>MAD-1824</td><td>7</td><td>6</td><td><span class="pill pill-green">OK</span></td></tr>
-            <tr><td>Red</td><td>MAD-1839</td><td>5</td><td>6</td><td><span class="pill pill-amber">Low</span></td></tr>
-            <tr><td>Royal Blue</td><td>MAD-1834</td><td>6</td><td>6</td><td><span class="pill pill-amber">Low</span></td></tr>
+            <tr><td data-label="Color">Black</td><td data-label="Code">MAD-1800</td><td data-label="Cones">4</td><td data-label="Reorder At">8</td><td data-label="Status"><span class="pill pill-red">Reorder now</span></td></tr>
+            <tr><td data-label="Color">White</td><td data-label="Code">MAD-1801</td><td data-label="Cones">11</td><td data-label="Reorder At">8</td><td data-label="Status"><span class="pill pill-green">OK</span></td></tr>
+            <tr><td data-label="Color">Navy</td><td data-label="Code">MAD-1843</td><td data-label="Cones">9</td><td data-label="Reorder At">6</td><td data-label="Status"><span class="pill pill-green">OK</span></td></tr>
+            <tr><td data-label="Color">Athletic Gold</td><td data-label="Code">MAD-1824</td><td data-label="Cones">7</td><td data-label="Reorder At">6</td><td data-label="Status"><span class="pill pill-green">OK</span></td></tr>
+            <tr><td data-label="Color">Red</td><td data-label="Code">MAD-1839</td><td data-label="Cones">5</td><td data-label="Reorder At">6</td><td data-label="Status"><span class="pill pill-amber">Low</span></td></tr>
+            <tr><td data-label="Color">Royal Blue</td><td data-label="Code">MAD-1834</td><td data-label="Cones">6</td><td data-label="Reorder At">6</td><td data-label="Status"><span class="pill pill-amber">Low</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -1455,6 +1819,408 @@
       </div>
     </div>
 
+    <!-- PRODUCTION KPIs -->
+    <div class="panel" id="panel-kpis">
+
+      <div class="callout" style="background:var(--accent-light);border:0.5px solid var(--accent-mid);border-radius:10px;padding:0.9rem 1.1rem;margin-bottom:1.5rem;display:flex;gap:12px;align-items:flex-start">
+        <div style="font-family:'Fraunces',serif;font-size:18px;color:var(--accent-deep);line-height:1">◆</div>
+        <div style="flex:1">
+          <div style="font-family:'Fraunces',serif;font-size:14px;color:var(--ink);margin-bottom:4px">Production KPIs framework</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.55">Industry-standard production metrics for screen printing and embroidery shops. Numbers below are illustrative for demo. Once integrated with Printavo, this panel will pull live operational data including misprint rates, downtime, on-time delivery, and cost-per-unit.</div>
+        </div>
+      </div>
+
+      <!-- KPI 1: MISPRINT, DEFECT & BLANK TRACKING -->
+      <div class="kpi-section">
+        <div class="kpi-section-head">
+          <span class="kpi-section-num">01</span>
+          <span class="kpi-section-title">Misprint, defect and blank tracking</span>
+          <span class="section-tag">May 2025</span>
+        </div>
+        <div class="kpi-section-desc">Type of issue, count, and employee tracked. Triggers urgent stock picks so errors do not delay orders. Helps identify if alternate suppliers are needed for inconsistent vendor quality, or if specific operators need re-training.</div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-card-label">Total Defects MTD</div>
+            <div class="kpi-card-value green">12</div>
+            <div class="kpi-card-sub">vs benchmark of 18</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill green" style="width:67%"></div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-label">Defect Rate</div>
+            <div class="kpi-card-value green">0.8%</div>
+            <div class="kpi-card-sub">Target: under 2%</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill green" style="width:40%"></div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-label">Reprint Cost MTD</div>
+            <div class="kpi-card-value amber">$340</div>
+            <div class="kpi-card-sub">Up $80 vs April</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill amber" style="width:55%"></div></div>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top:1rem">
+          <div class="card">
+            <div class="card-title">Defects by type</div>
+            <div class="emp-row">
+              <div class="emp-name">Misprint</div>
+              <div class="emp-bar-track"><div class="emp-bar-fill" style="width:42%"></div></div>
+              <div class="emp-val">5</div>
+            </div>
+            <div class="emp-row">
+              <div class="emp-name">Blank flaw</div>
+              <div class="emp-bar-track"><div class="emp-bar-fill amber" style="width:25%"></div></div>
+              <div class="emp-val">3</div>
+            </div>
+            <div class="emp-row">
+              <div class="emp-name">Color mismatch</div>
+              <div class="emp-bar-track"><div class="emp-bar-fill" style="width:17%"></div></div>
+              <div class="emp-val">2</div>
+            </div>
+            <div class="emp-row">
+              <div class="emp-name">Thread break</div>
+              <div class="emp-bar-track"><div class="emp-bar-fill" style="width:17%"></div></div>
+              <div class="emp-val">2</div>
+            </div>
+            <div class="benchmark">
+              <div class="benchmark-icon">!</div>
+              <div class="benchmark-text">3 blank flaws this month came from the same S&amp;S Activewear batch. <strong>Consider alternate supplier check.</strong></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Defects by employee</div>
+            <div class="emp-row">
+              <div class="emp-name">Nick</div>
+              <div class="emp-bar-track"><div class="emp-bar-fill green" style="width:30%"></div></div>
+              <div class="emp-val">3 / 480</div>
+            </div>
+            <div class="emp-row">
+              <div class="emp-name">Nick E</div>
+              <div class="emp-bar-track"><div class="emp-bar-fill green" style="width:25%"></div></div>
+              <div class="emp-val">2 / 240</div>
+            </div>
+            <div class="emp-row">
+              <div class="emp-name">Cody</div>
+              <div class="emp-bar-track"><div class="emp-bar-fill green" style="width:10%"></div></div>
+              <div class="emp-val">1 / 320</div>
+            </div>
+            <div class="emp-row">
+              <div class="emp-name">Vendor / batch</div>
+              <div class="emp-bar-track"><div class="emp-bar-fill amber" style="width:55%"></div></div>
+              <div class="emp-val">6 / 1040</div>
+            </div>
+            <div class="benchmark">
+              <div class="benchmark-icon">✓</div>
+              <div class="benchmark-text">All operator defect rates within target. <strong>Vendor-side accounts for 50% of issues.</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 2: DOWNTIME -->
+      <div class="kpi-section">
+        <div class="kpi-section-head">
+          <span class="kpi-section-num">02</span>
+          <span class="kpi-section-title">Downtime</span>
+          <span class="section-tag">May 2025</span>
+        </div>
+        <div class="kpi-section-desc">Reason and length of production halts. Identifies if machines are being used to capacity and informs decisions about new equipment purchases.</div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-card-label">Total Downtime MTD</div>
+            <div class="kpi-card-value amber">4.2 hrs</div>
+            <div class="kpi-card-sub">3% of total run time</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill amber" style="width:45%"></div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-label">Equipment Utilization</div>
+            <div class="kpi-card-value green">82%</div>
+            <div class="kpi-card-sub">Target: 75%+</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill green" style="width:82%"></div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-label">Avg Incident Length</div>
+            <div class="kpi-card-value">42 min</div>
+            <div class="kpi-card-sub">6 incidents this month</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill" style="width:50%"></div></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:1rem">
+          <div class="card-title">Downtime by cause</div>
+          <div class="emp-row">
+            <div class="emp-name">Screen prep delays</div>
+            <div class="emp-bar-track"><div class="emp-bar-fill amber" style="width:48%"></div></div>
+            <div class="emp-val">2.0 hr</div>
+          </div>
+          <div class="emp-row">
+            <div class="emp-name">Press maintenance</div>
+            <div class="emp-bar-track"><div class="emp-bar-fill" style="width:24%"></div></div>
+            <div class="emp-val">1.0 hr</div>
+          </div>
+          <div class="emp-row">
+            <div class="emp-name">Embroidery thread breaks</div>
+            <div class="emp-bar-track"><div class="emp-bar-fill" style="width:17%"></div></div>
+            <div class="emp-val">42 min</div>
+          </div>
+          <div class="emp-row">
+            <div class="emp-name">Art revisions / hold</div>
+            <div class="emp-bar-track"><div class="emp-bar-fill" style="width:11%"></div></div>
+            <div class="emp-val">28 min</div>
+          </div>
+          <div class="benchmark">
+            <div class="benchmark-icon">!</div>
+            <div class="benchmark-text">Screen prep is the biggest downtime category. <strong>Consider pre-burning screens nightly for next-day jobs.</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 3: ORDER TRACKING -->
+      <div class="kpi-section">
+        <div class="kpi-section-head">
+          <span class="kpi-section-num">03</span>
+          <span class="kpi-section-title">Order tracking + run rate</span>
+          <span class="section-tag">May 2025</span>
+        </div>
+        <div class="kpi-section-desc">Time spent on each production stage. Tracks run rate per hour, captures errors as they occur, and shows the full workflow from art approval to shipping.</div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-card-label">Avg Run Rate</div>
+            <div class="kpi-card-value green">142 pcs/hr</div>
+            <div class="kpi-card-sub">Screen press, target 120</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill green" style="width:88%"></div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-label">Embroidery Run Rate</div>
+            <div class="kpi-card-value green">38 pcs/hr</div>
+            <div class="kpi-card-sub">Target: 30 pcs/hr</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill green" style="width:85%"></div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-label">Art Approval Time</div>
+            <div class="kpi-card-value amber">1.4 days</div>
+            <div class="kpi-card-sub">Target: under 1 day</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill amber" style="width:70%"></div></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:1rem">
+          <div class="card-title">Avg time per workflow stage</div>
+          <div class="emp-row">
+            <div class="emp-name">Art approval</div>
+            <div class="emp-bar-track"><div class="emp-bar-fill amber" style="width:30%"></div></div>
+            <div class="emp-val">1.4 days</div>
+          </div>
+          <div class="emp-row">
+            <div class="emp-name">Blank receipt</div>
+            <div class="emp-bar-track"><div class="emp-bar-fill" style="width:45%"></div></div>
+            <div class="emp-val">2.1 days</div>
+          </div>
+          <div class="emp-row">
+            <div class="emp-name">Production</div>
+            <div class="emp-bar-track"><div class="emp-bar-fill green" style="width:38%"></div></div>
+            <div class="emp-val">1.8 days</div>
+          </div>
+          <div class="emp-row">
+            <div class="emp-name">QC + packaging</div>
+            <div class="emp-bar-track"><div class="emp-bar-fill green" style="width:13%"></div></div>
+            <div class="emp-val">0.6 days</div>
+          </div>
+          <div class="emp-row">
+            <div class="emp-name">Shipping</div>
+            <div class="emp-bar-track"><div class="emp-bar-fill green" style="width:7%"></div></div>
+            <div class="emp-val">0.3 days</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 4: ON-TIME DELIVERY -->
+      <div class="kpi-section">
+        <div class="kpi-section-head">
+          <span class="kpi-section-num">04</span>
+          <span class="kpi-section-title">Meeting customer deadlines</span>
+          <span class="section-tag">Rolling 90 days</span>
+        </div>
+        <div class="kpi-section-desc">On-time delivery rate is the leading indicator of customer satisfaction and reorder rate. Once consistently above 95%, this metric becomes a sales and marketing asset.</div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-card-label">On-Time Rate (90d)</div>
+            <div class="kpi-card-value green">94%</div>
+            <div class="kpi-card-sub">Target: 95%+ to brag</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill green" style="width:94%"></div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-label">On-Time Rate MTD</div>
+            <div class="kpi-card-value green">96%</div>
+            <div class="kpi-card-sub">23 of 24 orders</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill green" style="width:96%"></div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-label">Avg Days Early</div>
+            <div class="kpi-card-value">0.8d</div>
+            <div class="kpi-card-sub">Of on-time orders</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill" style="width:40%"></div></div>
+          </div>
+        </div>
+
+        <div class="benchmark" style="margin-top:1rem">
+          <div class="benchmark-icon">✓</div>
+          <div class="benchmark-text">94% rolling rate is just shy of brag-worthy territory. <strong>Hit 95% next month to unlock as a marketing asset.</strong></div>
+        </div>
+      </div>
+
+      <!-- KPI 5: SALES -->
+      <div class="kpi-section">
+        <div class="kpi-section-head">
+          <span class="kpi-section-num">05</span>
+          <span class="kpi-section-title">Sales indicators</span>
+          <span class="section-tag">May 2025</span>
+        </div>
+        <div class="kpi-section-desc">Sales volume, lead activity, repeat order rate, and quote-to-order conversion. These metrics tell the team if sales initiatives are working and where to push next.</div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-card-label">Quote-to-Order Rate</div>
+            <div class="kpi-card-value green">62%</div>
+            <div class="kpi-card-sub">5 of 8 quotes closed</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill green" style="width:62%"></div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-label">Repeat Order Rate</div>
+            <div class="kpi-card-value green">66%</div>
+            <div class="kpi-card-sub">Of MTD revenue</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill green" style="width:66%"></div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-label">Avg Order Value</div>
+            <div class="kpi-card-value">$1,240</div>
+            <div class="kpi-card-sub">+8% vs April</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill" style="width:62%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 6: COSTS -->
+      <div class="kpi-section">
+        <div class="kpi-section-head">
+          <span class="kpi-section-num">06</span>
+          <span class="kpi-section-title">Cost per unit + margins</span>
+          <span class="section-tag">May 2025</span>
+        </div>
+        <div class="kpi-section-desc">Cost per unit and overall production costs. Informs pricing decisions and identifies cost-cutting opportunities in the production process.</div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-card-label">Cost Per Unit (avg)</div>
+            <div class="kpi-card-value">$4.80</div>
+            <div class="kpi-card-sub">Across all jobs MTD</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill" style="width:48%"></div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-label">Avg Margin</div>
+            <div class="kpi-card-value green">68%</div>
+            <div class="kpi-card-sub">Industry avg: 55-65%</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill green" style="width:68%"></div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-label">Material Cost % of Revenue</div>
+            <div class="kpi-card-value green">22%</div>
+            <div class="kpi-card-sub">Target: under 25%</div>
+            <div class="kpi-progress"><div class="kpi-progress-fill green" style="width:55%"></div></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:1rem">
+          <div class="card-title">Cost breakdown per typical screen print order (100 pcs)</div>
+          <div class="emp-row">
+            <div class="emp-name">Blank garments</div>
+            <div class="emp-bar-track"><div class="emp-bar-fill" style="width:52%"></div></div>
+            <div class="emp-val">$250</div>
+          </div>
+          <div class="emp-row">
+            <div class="emp-name">Ink + emulsion</div>
+            <div class="emp-bar-track"><div class="emp-bar-fill" style="width:8%"></div></div>
+            <div class="emp-val">$38</div>
+          </div>
+          <div class="emp-row">
+            <div class="emp-name">Labor (3.5 hr avg)</div>
+            <div class="emp-bar-track"><div class="emp-bar-fill" style="width:28%"></div></div>
+            <div class="emp-val">$132</div>
+          </div>
+          <div class="emp-row">
+            <div class="emp-name">Packaging + shipping</div>
+            <div class="emp-bar-track"><div class="emp-bar-fill" style="width:6%"></div></div>
+            <div class="emp-val">$28</div>
+          </div>
+          <div class="emp-row">
+            <div class="emp-name">Overhead allocation</div>
+            <div class="emp-bar-track"><div class="emp-bar-fill" style="width:6%"></div></div>
+            <div class="emp-val">$32</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 7: TRENDS -->
+      <div class="kpi-section">
+        <div class="kpi-section-head">
+          <span class="kpi-section-num">07</span>
+          <span class="kpi-section-title">Trends + seasonal demand</span>
+          <span class="section-tag">Rolling 12 months</span>
+        </div>
+        <div class="kpi-section-desc">Sales history reveals seasonal demand and category growth. Data is shared with sales and marketing to target messaging by service line.</div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">Service line growth (YoY)</div>
+            <div class="emp-row">
+              <div class="emp-name">Screen print</div>
+              <div class="emp-bar-track"><div class="emp-bar-fill green" style="width:82%"></div></div>
+              <div class="emp-val">+22%</div>
+            </div>
+            <div class="emp-row">
+              <div class="emp-name">Embroidery</div>
+              <div class="emp-bar-track"><div class="emp-bar-fill green" style="width:65%"></div></div>
+              <div class="emp-val">+18%</div>
+            </div>
+            <div class="emp-row">
+              <div class="emp-name">Team / sports</div>
+              <div class="emp-bar-track"><div class="emp-bar-fill green" style="width:90%"></div></div>
+              <div class="emp-val">+34%</div>
+            </div>
+            <div class="emp-row">
+              <div class="emp-name">Corporate / agency</div>
+              <div class="emp-bar-track"><div class="emp-bar-fill" style="width:48%"></div></div>
+              <div class="emp-val">+12%</div>
+            </div>
+            <div class="benchmark">
+              <div class="benchmark-icon">↗</div>
+              <div class="benchmark-text">Sports vertical is fastest-growing. <strong>USF Football lead is timed perfectly with this trend.</strong></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Seasonal pattern</div>
+            <div class="bar-wrap">
+              <div class="bar-row"><div class="bar-label">Jan</div><div class="bar-track"><div class="bar-fill" style="width:55%"></div></div><div class="bar-val">$10.2K</div></div>
+              <div class="bar-row"><div class="bar-label">Feb</div><div class="bar-track"><div class="bar-fill" style="width:72%"></div></div><div class="bar-val">$13.4K</div></div>
+              <div class="bar-row"><div class="bar-label">Mar</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-val">$14.9K</div></div>
+              <div class="bar-row"><div class="bar-label">Apr</div><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div><div class="bar-val">$16.4K</div></div>
+              <div class="bar-row"><div class="bar-label">May</div><div class="bar-track"><div class="bar-fill" style="width:99%;background:var(--accent-deep)"></div></div><div class="bar-val">$18.4K</div></div>
+              <div class="bar-row"><div class="bar-label">Jun (proj)</div><div class="bar-track"><div class="bar-fill" style="width:96%;opacity:0.4"></div></div><div class="bar-val">~$17.8K</div></div>
+            </div>
+            <div class="benchmark">
+              <div class="benchmark-icon">↗</div>
+              <div class="benchmark-text">5 straight months of growth. <strong>Trajectory supports 15-order monthly goal sustainability.</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
     <!-- CLIENTS -->
     <div class="panel" id="panel-clients">
       <div class="stat-grid">
@@ -1468,14 +2234,14 @@
         <table>
           <thead><tr><th>Client</th><th>Type</th><th>Last Order</th><th>Lifetime Spend</th><th>Orders</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td><strong>Champs Elysium Gym</strong></td><td>Fitness</td><td>May 17</td><td>$38,400</td><td>18</td><td><span class="pill pill-green">Active</span></td></tr>
-            <tr><td><strong>Kobie Marketing</strong></td><td>Agency</td><td>May 14</td><td>$24,600</td><td>11</td><td><span class="pill pill-green">Active</span></td></tr>
-            <tr><td>Tampa FC Youth League</td><td>Sports</td><td>May 10</td><td>$12,800</td><td>6</td><td><span class="pill pill-green">Active</span></td></tr>
-            <tr><td>Riviera Bay Realty</td><td>Real Estate</td><td>May 8</td><td>$8,200</td><td>5</td><td><span class="pill pill-green">Active</span></td></tr>
-            <tr><td>St. Pete FC</td><td>Sports</td><td>Apr 22</td><td>$6,400</td><td>3</td><td><span class="pill pill-green">Active</span></td></tr>
-            <tr><td>Pinellas County Schools</td><td>Education</td><td>Apr 10</td><td>$14,200</td><td>7</td><td><span class="pill pill-amber">Due for outreach</span></td></tr>
-            <tr><td>Bay Area HVAC</td><td>Trades</td><td>Mar 28</td><td>$4,800</td><td>4</td><td><span class="pill pill-amber">Due for outreach</span></td></tr>
-            <tr><td>Sun Coast Barbershop</td><td>Retail</td><td>Feb 14</td><td>$2,100</td><td>2</td><td><span class="pill pill-red">Lapsed 90d+</span></td></tr>
+            <tr><td data-label="Client"><strong>Champs Elysium Gym</strong></td><td data-label="Type">Fitness</td><td data-label="Last Order">May 17</td><td data-label="Lifetime Spend">$38,400</td><td data-label="Orders">18</td><td data-label="Status"><span class="pill pill-green">Active</span></td></tr>
+            <tr><td data-label="Client"><strong>Kobie Marketing</strong></td><td data-label="Type">Agency</td><td data-label="Last Order">May 14</td><td data-label="Lifetime Spend">$24,600</td><td data-label="Orders">11</td><td data-label="Status"><span class="pill pill-green">Active</span></td></tr>
+            <tr><td data-label="Client">Tampa FC Youth League</td><td data-label="Type">Sports</td><td data-label="Last Order">May 10</td><td data-label="Lifetime Spend">$12,800</td><td data-label="Orders">6</td><td data-label="Status"><span class="pill pill-green">Active</span></td></tr>
+            <tr><td data-label="Client">Riviera Bay Realty</td><td data-label="Type">Real Estate</td><td data-label="Last Order">May 8</td><td data-label="Lifetime Spend">$8,200</td><td data-label="Orders">5</td><td data-label="Status"><span class="pill pill-green">Active</span></td></tr>
+            <tr><td data-label="Client">St. Pete FC</td><td data-label="Type">Sports</td><td data-label="Last Order">Apr 22</td><td data-label="Lifetime Spend">$6,400</td><td data-label="Orders">3</td><td data-label="Status"><span class="pill pill-green">Active</span></td></tr>
+            <tr><td data-label="Client">Pinellas County Schools</td><td data-label="Type">Education</td><td data-label="Last Order">Apr 10</td><td data-label="Lifetime Spend">$14,200</td><td data-label="Orders">7</td><td data-label="Status"><span class="pill pill-amber">Due for outreach</span></td></tr>
+            <tr><td data-label="Client">Bay Area HVAC</td><td data-label="Type">Trades</td><td data-label="Last Order">Mar 28</td><td data-label="Lifetime Spend">$4,800</td><td data-label="Orders">4</td><td data-label="Status"><span class="pill pill-amber">Due for outreach</span></td></tr>
+            <tr><td data-label="Client">Sun Coast Barbershop</td><td data-label="Type">Retail</td><td data-label="Last Order">Feb 14</td><td data-label="Lifetime Spend">$2,100</td><td data-label="Orders">2</td><td data-label="Status"><span class="pill pill-red">Lapsed 90d+</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -1494,11 +2260,11 @@
         <table>
           <thead><tr><th>Lead</th><th>Source</th><th>Request</th><th>Value Est.</th><th>Stage</th><th>Follow-up</th></tr></thead>
           <tbody>
-            <tr><td><strong>USF Football (Zach Cole)</strong></td><td>Referral</td><td>Team apparel — season</td><td>$12,000+</td><td><span class="pill pill-amber">Quote sent</span></td><td>May 22</td></tr>
-            <tr><td>Gulfport Marina</td><td>Instagram</td><td>Staff polos — 60 pcs</td><td>$1,800</td><td><span class="pill pill-amber">Quote sent</span></td><td>May 21</td></tr>
-            <tr><td>Ybor City Brewing</td><td>Google</td><td>Event tees — 150 pcs</td><td>$2,250</td><td><span class="pill pill-blue">New inquiry</span></td><td>May 20</td></tr>
-            <tr><td>Clearwater CrossFit</td><td>Referral</td><td>Member shirts — 80 pcs</td><td>$1,600</td><td><span class="pill pill-blue">New inquiry</span></td><td>May 20</td></tr>
-            <tr><td>St. Pete Running Club</td><td>Google</td><td>Race shirts — 200 pcs</td><td>$3,000</td><td><span class="pill pill-gray">Needs quote</span></td><td>May 23</td></tr>
+            <tr><td data-label="Lead"><strong>USF Football (Zach Cole)</strong></td><td data-label="Source">Referral</td><td data-label="Request">Team apparel · season</td><td data-label="Value Est.">$12,000+</td><td data-label="Stage"><span class="pill pill-amber">Quote sent</span></td><td data-label="Follow-up">May 22</td></tr>
+            <tr><td data-label="Lead">Gulfport Marina</td><td data-label="Source">Instagram</td><td data-label="Request">Staff polos · 60 pcs</td><td data-label="Value Est.">$1,800</td><td data-label="Stage"><span class="pill pill-amber">Quote sent</span></td><td data-label="Follow-up">May 21</td></tr>
+            <tr><td data-label="Lead">Ybor City Brewing</td><td data-label="Source">Google</td><td data-label="Request">Event tees · 150 pcs</td><td data-label="Value Est.">$2,250</td><td data-label="Stage"><span class="pill pill-blue">New inquiry</span></td><td data-label="Follow-up">May 20</td></tr>
+            <tr><td data-label="Lead">Clearwater CrossFit</td><td data-label="Source">Referral</td><td data-label="Request">Member shirts · 80 pcs</td><td data-label="Value Est.">$1,600</td><td data-label="Stage"><span class="pill pill-blue">New inquiry</span></td><td data-label="Follow-up">May 20</td></tr>
+            <tr><td data-label="Lead">St. Pete Running Club</td><td data-label="Source">Google</td><td data-label="Request">Race shirts · 200 pcs</td><td data-label="Value Est.">$3,000</td><td data-label="Stage"><span class="pill pill-gray">Needs quote</span></td><td data-label="Follow-up">May 23</td></tr>
           </tbody>
         </table>
       </div>
@@ -1531,7 +2297,7 @@
       </div>
       <div class="two-col">
         <div class="card">
-          <div class="card-title">Monthly revenue — 2025</div>
+          <div class="card-title">Monthly revenue · 2025</div>
           <div class="bar-wrap">
             <div class="bar-row"><div class="bar-label">January</div><div class="bar-track"><div class="bar-fill" style="width:55%"></div></div><div class="bar-val">$10,200</div></div>
             <div class="bar-row"><div class="bar-label">February</div><div class="bar-track"><div class="bar-fill" style="width:72%"></div></div><div class="bar-val">$13,400</div></div>
@@ -1543,11 +2309,11 @@
         <div class="card">
           <div class="card-title">Outstanding invoices</div>
           <div class="client-row">
-            <div style="flex:1"><div class="client-name" style="font-size:13px">Bay Area HVAC</div><div class="client-meta">Invoice CT-INV-0041 — due May 10</div></div>
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Bay Area HVAC</div><div class="client-meta">Invoice CT-INV-0041 · due May 10</div></div>
             <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">$1,440</div>
           </div>
           <div class="client-row">
-            <div style="flex:1"><div class="client-name" style="font-size:13px">Sun Coast Barbershop</div><div class="client-meta">Invoice CT-INV-0038 — due May 1</div></div>
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Sun Coast Barbershop</div><div class="client-meta">Invoice CT-INV-0038 · due May 1</div></div>
             <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">$2,760</div>
           </div>
           <div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border)">
@@ -1597,7 +2363,7 @@
           </div>
           <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:0.5px solid var(--border)">
             <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px">Top performing ad</div>
-            <div style="font-size:13px;font-weight:500;margin-bottom:4px">"Built in St. Pete — Bulk pricing for teams + brands"</div>
+            <div style="font-size:13px;font-weight:500;margin-bottom:4px">"Built in St. Pete · Bulk pricing for teams + brands"</div>
             <div style="font-size:11px;color:var(--muted);line-height:1.5">CTR 3.4% · CPC $0.62 · CPA $34 · 9 of 14 conversions</div>
           </div>
         </div>
@@ -1634,12 +2400,12 @@
           <div class="card-title">TikTok, top videos (30d)</div>
           <div class="client-row">
             <div class="avatar" style="background:#000;color:#fff;font-size:9px">TT</div>
-            <div style="flex:1"><div class="client-name" style="font-size:13px">Press start to finish — Champs Elysium order</div><div class="client-meta">Posted May 8 · Process content</div></div>
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Press start to finish · Champs Elysium order</div><div class="client-meta">Posted May 8 · Process content</div></div>
             <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">22.8K</div>
           </div>
           <div class="client-row">
             <div class="avatar" style="background:#000;color:#fff;font-size:9px">TT</div>
-            <div style="flex:1"><div class="client-name" style="font-size:13px">Inside the shop — embroidery setup</div><div class="client-meta">Posted May 12 · BTS</div></div>
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Inside the shop · embroidery setup</div><div class="client-meta">Posted May 12 · BTS</div></div>
             <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">18.4K</div>
           </div>
           <div class="client-row">
@@ -1649,7 +2415,7 @@
           </div>
           <div class="client-row">
             <div class="avatar" style="background:#000;color:#fff;font-size:9px">TT</div>
-            <div style="flex:1"><div class="client-name" style="font-size:13px">Kobie event drop — final reveal</div><div class="client-meta">Posted May 15 · Product</div></div>
+            <div style="flex:1"><div class="client-name" style="font-size:13px">Kobie event drop · final reveal</div><div class="client-meta">Posted May 15 · Product</div></div>
             <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">11.6K</div>
           </div>
           <div class="client-row">
@@ -1742,7 +2508,7 @@
       </div>
       <div class="two-col">
         <div class="card">
-          <div class="card-title">Staff — this week</div>
+          <div class="card-title">Staff · this week</div>
           <div class="staff-row">
             <div class="avatar" style="background:#e8f3ed;color:#2a6e4a">CD</div>
             <div class="staff-info"><div class="staff-name">Cody</div><div class="staff-role">Graphic Designer + Production Manager</div></div>
@@ -1825,6 +2591,7 @@ const titles = {
   orders: 'Orders + Job Tracking',
   calendar: 'Production Calendar',
   inventory: 'Inventory',
+  kpis: 'Production KPIs',
   clients: 'Client Database',
   leads: 'Lead Log',
   revenue: 'Revenue',
@@ -1860,7 +2627,50 @@ document.getElementById('date-chip').textContent = d.toLocaleDateString('en-US',
 // CALENDAR
 const calGrid = document.getElementById('cal-grid');
 const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const jobDays = [6, 9, 13, 14, 17, 20, 21, 23, 26, 28, 30];
+
+// Job data keyed by day of month (May 2025)
+const calJobs = {
+  6: [
+    { id: 'CT-0205', title: 'Riviera Bay Realty polos', meta: { Qty: '48 pcs', Service: 'Embroidery', Owner: 'Nick E', Status: 'Shipped' } }
+  ],
+  9: [
+    { id: 'CT-0207', title: 'Kobie Marketing tees', meta: { Qty: '96 pcs', Service: 'Embroidery', Owner: 'Nick E', Status: 'Delivered' } }
+  ],
+  13: [
+    { id: 'CT-0209', title: 'St. Pete FC away kits', meta: { Qty: '60 pcs', Service: 'Screen print', Owner: 'Nick', Status: 'Delivered' } }
+  ],
+  14: [
+    { id: 'CT-0210', title: 'Champs Elysium signature tees', meta: { Qty: '240 pcs', Service: 'Screen print', Owner: 'Nick', Status: 'Delivered' } }
+  ],
+  17: [
+    { id: 'CT-0214', title: 'Tampa FC Youth shirts', meta: { Qty: '180 pcs', Service: 'Screen print', Owner: 'Nick', Status: 'Delivered' } }
+  ],
+  19: [
+    { id: 'CT-0215', title: 'Tampa FC reorder', meta: { Qty: '48 pcs', Service: 'Screen print', Owner: 'Cody', Status: 'Art approval' } }
+  ],
+  20: [
+    { id: 'CT-0218', title: 'USF Football warmups', meta: { Qty: '60 pcs', Service: 'Screen print', Owner: 'Nick', Status: 'In production' } }
+  ],
+  21: [
+    { id: 'CT-0217', title: 'Champs Elysium reorder', meta: { Qty: '120 pcs', Service: 'Screen print', Owner: 'Nick', Status: 'In production' } }
+  ],
+  23: [
+    { id: 'CT-0216', title: 'Kobie event shirts', meta: { Qty: '48 pcs', Service: 'Embroidery', Owner: 'Nick E', Status: 'Ready to ship' } }
+  ],
+  26: [
+    { id: 'CT-0215', title: 'Tampa FC Youth (full job)', meta: { Qty: '180 pcs', Service: 'Screen print', Owner: 'Nick', Status: 'Queued' } }
+  ],
+  28: [
+    { id: 'CT-0214b', title: 'Riviera Bay Realty', meta: { Qty: '48 pcs', Service: 'Embroidery', Owner: 'Nick E', Status: 'Queued' } }
+  ],
+  30: [
+    { id: 'CT-0213', title: 'St. Pete FC tees', meta: { Qty: '200 pcs', Service: 'Screen print', Owner: 'Nick', Status: 'Queued' } },
+    { id: 'CT-0219', title: 'New inquiry holdspot', meta: { Qty: 'TBD', Service: 'TBD', Owner: 'Unassigned', Status: 'Pending quote' } }
+  ]
+};
+
+const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
 days.forEach(d => {
   const el = document.createElement('div');
   el.className = 'cal-day-label';
@@ -1876,11 +2686,64 @@ for (let i = 0; i < 3; i++) {
 for (let i = 1; i <= 31; i++) {
   const el = document.createElement('div');
   el.textContent = i;
-  if (i === 18) el.className = 'cal-day today';
-  else if (jobDays.includes(i)) el.className = 'cal-day has-job';
+  el.dataset.day = i;
+  const hasJob = calJobs.hasOwnProperty(i);
+  if (i === 18 && hasJob) el.className = 'cal-day today has-job';
+  else if (i === 18) el.className = 'cal-day today';
+  else if (hasJob) el.className = 'cal-day has-job';
   else el.className = 'cal-day';
+
+  if (hasJob || i === 18) {
+    el.addEventListener('click', () => showCalDetail(i));
+  }
   calGrid.appendChild(el);
 }
+
+function showCalDetail(day) {
+  // Highlight selected day
+  document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('selected'));
+  document.querySelector(`.cal-day[data-day="${day}"]`)?.classList.add('selected');
+
+  const detailEl = document.getElementById('cal-detail');
+  if (!detailEl) return;
+
+  const jobs = calJobs[day] || [];
+  const dayLabel = `${monthNames[4]} ${day}, 2025`;
+
+  if (jobs.length === 0) {
+    detailEl.innerHTML = `
+      <div class="cal-detail-header">
+        <div class="cal-detail-date">${dayLabel}</div>
+        <div class="cal-detail-count">Today</div>
+      </div>
+      <div class="cal-detail-empty">No jobs scheduled for this day.</div>
+    `;
+    return;
+  }
+
+  let jobsHtml = jobs.map(j => `
+    <div class="cal-job-card">
+      <div class="cal-job-top">
+        <div class="cal-job-title">${j.title}</div>
+        <div class="cal-job-id">${j.id}</div>
+      </div>
+      <div class="cal-job-meta">
+        ${Object.entries(j.meta).map(([k, v]) => `<span><strong>${k}:</strong> ${v}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  detailEl.innerHTML = `
+    <div class="cal-detail-header">
+      <div class="cal-detail-date">${dayLabel}</div>
+      <div class="cal-detail-count">${jobs.length} ${jobs.length === 1 ? 'job' : 'jobs'}</div>
+    </div>
+    ${jobsHtml}
+  `;
+}
+
+// Auto-show today's detail on load
+setTimeout(() => showCalDetail(18), 100);
 
 // CHAT
 function toggleChat() {
@@ -1919,6 +2782,16 @@ SOCIAL + MARKETING (last 30 days):
 - Website: 3,420 visits (+18% MoM), 2.8% conversion rate, 96 form submissions, top source Instagram (38%), Google organic (24%), Direct (22%)
 
 MINIMUMS: Screen print 20 pcs, embroidery 12 pcs. DTG discontinued.
+
+PRODUCTION KPIs (May 2025):
+- Defects: 12 MTD vs benchmark 18 (under target). Defect rate 0.8%, target under 2%. Reprint cost $340 MTD.
+- 50% of defects are vendor-side (S&S Activewear batch). Operator rates within target.
+- Downtime: 4.2 hrs MTD (3% of run time). Equipment utilization 82% (target 75%+). Biggest cause: screen prep delays (2.0 hr).
+- Run rate: screen press 142 pcs/hr (target 120), embroidery 38 pcs/hr (target 30). Art approval 1.4 days (target under 1 day).
+- On-time delivery: 96% MTD, 94% rolling 90-day. Need 95%+ to use as marketing asset.
+- Quote-to-order rate: 62%. Repeat order rate: 66% of MTD revenue. Avg order value $1,240 (+8% vs April).
+- Cost per unit avg $4.80. Margin 68% (industry avg 55-65%). Material cost 22% of revenue.
+- Service line growth YoY: screen print +22%, embroidery +18%, sports +34% (fastest growing), corporate +12%.
 
 Keep answers short, punchy, and specific. Use numbers. No fluff.`;
 
