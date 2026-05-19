@@ -1621,22 +1621,81 @@
     .kpi-card-value { font-size: 22px; }
     .emp-name { min-width: 70px; font-size: 12px; }
 
-    /* Pipeline columns shrink and become snap-scrollable */
+    /* Pipeline becomes vertical stack on mobile */
     .pipeline-wrap {
       padding: 0.6rem;
-      scroll-snap-type: x mandatory;
+      overflow-x: visible;
+    }
+    .pipeline-board {
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+      width: 100%;
     }
     .pipeline-col {
-      flex: 0 0 85%;
-      max-width: 280px;
-      scroll-snap-align: start;
+      flex: 1 1 auto;
+      width: 100%;
+      max-width: none;
       max-height: none;
     }
-    .pipe-insight {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
+    .pipeline-col-head {
+      cursor: pointer;
+      user-select: none;
     }
+    .pipeline-col-head::after {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-right: 1.5px solid var(--muted);
+      border-bottom: 1.5px solid var(--muted);
+      transform: rotate(45deg);
+      position: absolute;
+      right: 1.1rem;
+      top: 1.05rem;
+      transition: transform 0.2s;
+    }
+    .pipeline-col-head {
+      position: relative;
+      padding-right: 2.25rem;
+    }
+    .pipeline-col.collapsed .pipeline-col-head::after {
+      transform: rotate(-45deg);
+      top: 1.15rem;
+    }
+    .pipeline-col.collapsed .pipeline-col-body {
+      display: none;
+    }
+    .pipeline-col-body {
+      max-height: 400px;
+    }
+
+    /* Section header with toggle stacks */
+    .panel#panel-orders .section-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .view-toggle {
+      align-self: flex-start;
+    }
+    .view-toggle-btn {
+      padding: 7px 16px;
+      font-size: 13px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .pipe-insight {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 0.65rem 0.85rem;
+    }
+    .pipe-insight-text { font-size: 12px; }
+
+    .pipe-filters { gap: 5px; }
+    .pipe-filter-chip { padding: 5px 10px; font-size: 11px; }
 
     /* Review cards */
     .review-card { padding: 0.9rem; }
@@ -1675,40 +1734,40 @@
 
     <div class="nav-label">Operations</div>
     <div class="nav-item" onclick="showPanel('orders', this)">
-      <span class="nav-dot"></span> Orders + Jobs
+      <span class="nav-dot"></span> Orders
       <span class="nav-badge">3</span>
     </div>
     <div class="nav-item" onclick="showPanel('calendar', this)">
-      <span class="nav-dot"></span> Production Calendar
+      <span class="nav-dot"></span> Calendar
+    </div>
+    <div class="nav-item" onclick="showPanel('staff', this)">
+      <span class="nav-dot"></span> Staff
     </div>
     <div class="nav-item" onclick="showPanel('inventory', this)">
       <span class="nav-dot"></span> Inventory
     </div>
     <div class="nav-item" onclick="showPanel('kpis', this)">
-      <span class="nav-dot"></span> Production KPIs
+      <span class="nav-dot"></span> KPIs
     </div>
 
-    <div class="nav-label">Clients</div>
-    <div class="nav-item" onclick="showPanel('clients', this)">
-      <span class="nav-dot"></span> Client Database
-    </div>
+    <div class="nav-label">Sales</div>
     <div class="nav-item" onclick="showPanel('leads', this)">
-      <span class="nav-dot"></span> Lead Log
+      <span class="nav-dot"></span> Pipeline
       <span class="nav-badge">2</span>
     </div>
-
-    <div class="nav-label">Business</div>
+    <div class="nav-item" onclick="showPanel('clients', this)">
+      <span class="nav-dot"></span> Clients
+    </div>
     <div class="nav-item" onclick="showPanel('revenue', this)">
       <span class="nav-dot"></span> Revenue
     </div>
-    <div class="nav-item" onclick="showPanel('social', this)">
-      <span class="nav-dot"></span> Social Pulse
-    </div>
+
+    <div class="nav-label">Brand</div>
     <div class="nav-item" onclick="showPanel('reviews', this)">
       <span class="nav-dot"></span> Reviews
     </div>
-    <div class="nav-item" onclick="showPanel('staff', this)">
-      <span class="nav-dot"></span> Staff
+    <div class="nav-item" onclick="showPanel('social', this)">
+      <span class="nav-dot"></span> Marketing
     </div>
   </nav>
 </aside>
@@ -1784,7 +1843,7 @@
       </div>
       <div class="category-grid">
 
-        <div class="category-card" onclick="showPanel('inventory', document.querySelectorAll('.nav-item')[3])">
+        <div class="category-card" onclick="showPanel('inventory', document.querySelectorAll('.nav-item')[4])">
           <div class="category-card-head">
             <div class="category-card-label">Inventory</div>
             <div class="category-card-arrow">→</div>
@@ -1798,7 +1857,7 @@
           </svg>
         </div>
 
-        <div class="category-card" onclick="showPanel('clients', document.querySelectorAll('.nav-item')[5])">
+        <div class="category-card" onclick="showPanel('clients', document.querySelectorAll('.nav-item')[7])">
           <div class="category-card-head">
             <div class="category-card-label">Clients</div>
             <div class="category-card-arrow">→</div>
@@ -1814,7 +1873,7 @@
 
         <div class="category-card" onclick="showPanel('leads', document.querySelectorAll('.nav-item')[6])">
           <div class="category-card-head">
-            <div class="category-card-label">Leads</div>
+            <div class="category-card-label">Pipeline</div>
             <div class="category-card-arrow">→</div>
           </div>
           <div class="category-card-value">8 open</div>
@@ -1840,9 +1899,9 @@
           </svg>
         </div>
 
-        <div class="category-card" onclick="showPanel('social', document.querySelectorAll('.nav-item')[8])">
+        <div class="category-card" onclick="showPanel('social', document.querySelectorAll('.nav-item')[10])">
           <div class="category-card-head">
-            <div class="category-card-label">Social + Ads</div>
+            <div class="category-card-label">Marketing</div>
             <div class="category-card-arrow">→</div>
           </div>
           <div class="category-card-value">5.9x ROAS</div>
@@ -1854,7 +1913,7 @@
           </svg>
         </div>
 
-        <div class="category-card" onclick="showPanel('staff', document.querySelectorAll('.nav-item')[10])">
+        <div class="category-card" onclick="showPanel('staff', document.querySelectorAll('.nav-item')[3])">
           <div class="category-card-head">
             <div class="category-card-label">Staff</div>
             <div class="category-card-arrow">→</div>
@@ -3216,16 +3275,16 @@
 // NAV
 const titles = {
   overview: 'Dashboard',
-  orders: 'Orders + Job Tracking',
+  orders: 'Orders',
   calendar: 'Production Calendar',
   inventory: 'Inventory',
   kpis: 'Production KPIs',
-  clients: 'Client Database',
-  leads: 'Lead Log',
+  clients: 'Clients',
+  leads: 'Sales Pipeline',
   revenue: 'Revenue',
-  social: 'Social Media Pulse',
-  reviews: 'Reviews + Feedback',
-  staff: 'Staff Management'
+  social: 'Marketing',
+  reviews: 'Reviews',
+  staff: 'Staff'
 };
 
 function showPanel(id, el) {
@@ -3262,6 +3321,34 @@ function setOrdersFilter(filter, chip) {
   chip.classList.add('active');
   // In production: filter cards by data attribute. For now, just visual state.
 }
+
+// Mobile pipeline column collapse toggle
+document.addEventListener('click', (e) => {
+  if (window.innerWidth > 720) return;
+  const head = e.target.closest('.pipeline-col-head');
+  if (head) {
+    head.parentElement.classList.toggle('collapsed');
+  }
+});
+
+// On mobile: expand In Production + Art Approval (action-needed columns), collapse the rest
+function initPipelineMobile() {
+  if (window.innerWidth <= 720) {
+    const expandedStages = ['Art Approval', 'In Production'];
+    document.querySelectorAll('.pipeline-col').forEach((col) => {
+      const title = col.querySelector('.pipeline-col-title')?.textContent || '';
+      if (!expandedStages.includes(title)) {
+        col.classList.add('collapsed');
+      }
+    });
+  }
+}
+window.addEventListener('load', initPipelineMobile);
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 720) {
+    document.querySelectorAll('.pipeline-col.collapsed').forEach(c => c.classList.remove('collapsed'));
+  }
+});
 
 // DATE
 const d = new Date();
